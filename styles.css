@@ -172,8 +172,12 @@ textarea {
   background: #8a5cff;
 }
 
-#shootBtn {
-  background: #ef476f;
+#swordBtn {
+  background: #ff7f50;
+}
+
+#magicBtn {
+  background: #9b5de5;
 }
 
 #jumpBtn {
