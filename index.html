@@ -22,7 +22,7 @@
             <li>오른쪽 관리자 툴에서 스토리/드래곤을 원하는대로 수정</li>
             <li><strong>설정 저장</strong> 버튼 클릭</li>
             <li><strong>게임 시작</strong> 버튼 클릭</li>
-            <li>드래곤을 만나면 같은 색 하트(💖)를 골라 친구 만들기</li>
+            <li>앞으로 달리며 스페이스(💖)와 ↑(점프)로 스테이지 진행</li>
           </ol>
           <div class="controls">
             <button id="guidePlayBtn" type="button">가이드대로 바로 시작</button>
@@ -45,9 +45,12 @@
         </div>
 
         <div id="battleUI" class="battle-ui hidden">
-          <h2 id="battleTitle">드래곤과 만났어요!</h2>
-          <p id="battleHint">같은 색의 하트를 선택해 드래곤을 안정시켜 주세요.</p>
-          <div id="colorButtons" class="color-buttons"></div>
+          <h2 id="battleTitle">아케이드 조작</h2>
+          <p id="battleHint">스페이스: 하트 발사 / ↑: 점프</p>
+          <div id="actionButtons" class="color-buttons">
+            <button id="shootBtn" type="button">💖 하트 발사</button>
+            <button id="jumpBtn" type="button">⬆️ 점프</button>
+          </div>
         </div>
 
         <div id="message" class="message"></div>

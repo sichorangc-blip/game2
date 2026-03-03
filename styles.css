@@ -166,3 +166,16 @@ textarea {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+
+#actionButtons button {
+  background: #8a5cff;
+}
+
+#shootBtn {
+  background: #ef476f;
+}
+
+#jumpBtn {
+  background: #118ab2;
+}
