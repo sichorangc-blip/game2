@@ -1,0 +1,17 @@
+[샤이닝 프린세스 게임 시작 안내]
+
+중요:
+- /workspace/game2 는 제 작업 서버 경로입니다.
+- 내 PC(Windows)에서는 없는 게 정상입니다.
+
+당신이 해야 할 순서:
+1) 먼저 game2.zip 파일을 받기
+2) 압축 풀어서 game2 폴더 만들기
+3) 그 폴더에서 run.bat 실행
+4) 브라우저에서 http://localhost:8080 열기
+
+Windows PowerShell 예시:
+cd C:\Users\사용자이름\Downloads\game2
+.\run.bat
+
+(즉, 먼저 다운로드/압축해제를 해야 실행할 수 있습니다.)

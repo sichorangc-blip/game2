@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>샤이닝 프린세스: 레인보우 드래곤 어드벤처</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header>
+      <h1>✨ 샤이닝 프린세스: 레인보우 드래곤 어드벤처 ✨</h1>
+      <p>
+        폭력 없는 도트 픽셀 모험 게임 · 드래곤을 해치우는 대신 마음의 빛으로 친구가 되세요!
+      </p>
+    </header>
+
+    <main>
+      <section class="game-panel">
+        <div class="quick-guide" aria-label="처음 사용자 가이드">
+          <h2>처음 사용 가이드</h2>
+          <ol>
+            <li>오른쪽 관리자 툴에서 스토리/드래곤을 원하는대로 수정</li>
+            <li><strong>설정 저장</strong> 버튼 클릭</li>
+            <li><strong>게임 시작</strong> 버튼 클릭</li>
+            <li>드래곤을 만나면 같은 색 하트(💖)를 골라 친구 만들기</li>
+          </ol>
+          <div class="controls">
+            <button id="guidePlayBtn" type="button">가이드대로 바로 시작</button>
+          </div>
+        </div>
+
+        <canvas id="game" width="640" height="360" aria-label="게임 화면"></canvas>
+
+        <div class="hud">
+          <div><strong>스테이지:</strong> <span id="stageLabel">1</span></div>
+          <div><strong>진행도:</strong> <span id="progressLabel">0%</span></div>
+          <div><strong>빛 에너지:</strong> <span id="energyLabel">5</span></div>
+          <div><strong>친구가 된 용:</strong> <span id="friendLabel">0</span></div>
+        </div>
+
+        <div class="controls">
+          <button id="startBtn">게임 시작</button>
+          <button id="pauseBtn">일시정지</button>
+          <button id="resetBtn">처음부터</button>
+        </div>
+
+        <div id="battleUI" class="battle-ui hidden">
+          <h2 id="battleTitle">드래곤과 만났어요!</h2>
+          <p id="battleHint">같은 색의 하트를 선택해 드래곤을 안정시켜 주세요.</p>
+          <div id="colorButtons" class="color-buttons"></div>
+        </div>
+
+        <div id="message" class="message"></div>
+      </section>
+
+      <aside class="admin-panel">
+        <h2>관리자 툴 (스토리/설정 편집)</h2>
+        <p>
+          코딩 없이 게임 데이터를 수정할 수 있어요. 저장하면 다음 실행부터 바로 반영됩니다.
+        </p>
+        <p class="tip-box">
+          ✅ 가장 쉬운 순서: <strong>제목/스토리 수정 → 설정 저장 → 게임 시작</strong>
+        </p>
+
+        <label>
+          게임 제목
+          <input id="cfgTitle" type="text" />
+        </label>
+
+        <label>
+          프린세스 이름
+          <input id="cfgHeroName" type="text" />
+        </label>
+
+        <label>
+          배경 스토리
+          <textarea id="cfgStory" rows="4"></textarea>
+        </label>
+
+        <label>
+          배경 이미지 업로드 (선택)
+          <input id="bgUpload" type="file" accept="image/*" />
+        </label>
+        <label>
+          픽셀 강도
+          <input id="pixelSize" type="range" min="2" max="20" value="8" />
+        </label>
+        <canvas id="pixelPreview" width="320" height="180" aria-label="픽셀 미리보기"></canvas>
+
+        <h3>드래곤 설정</h3>
+        <div id="dragonList"></div>
+        <button id="addDragonBtn" type="button">드래곤 추가</button>
+
+        <div class="admin-actions">
+          <button id="saveConfigBtn" type="button">설정 저장</button>
+          <button id="exportConfigBtn" type="button">JSON 내보내기</button>
+          <label class="import-label">
+            JSON 불러오기
+            <input id="importConfigInput" type="file" accept="application/json" />
+          </label>
+        </div>
+      </aside>
+    </main>
+
+    <footer>
+      <small>
+        팁: 이 게임은 PWA 형태로 제작되어, 나중에 Capacitor(무료)로 안드로이드/iOS 앱으로 빌드할 수 있습니다.
+      </small>
+    </footer>
+
+    <script src="app.js"></script>
+  </body>
+</html>

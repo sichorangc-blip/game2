@@ -1,0 +1,168 @@
+:root {
+  --bg: #131426;
+  --panel: #1f213a;
+  --card: #2c2f50;
+  --text: #f6f7ff;
+  --accent: #ffd166;
+  --good: #58d68d;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Pretendard", "Noto Sans KR", system-ui, sans-serif;
+  background: linear-gradient(180deg, #10111f, #1a1d37);
+  color: var(--text);
+}
+
+header,
+footer {
+  text-align: center;
+  padding: 1rem;
+}
+
+main {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.game-panel,
+.admin-panel {
+  background: var(--panel);
+  border-radius: 16px;
+  padding: 1rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+#game,
+#pixelPreview {
+  width: 100%;
+  image-rendering: pixelated;
+  border: 3px solid #3e4170;
+  border-radius: 12px;
+  background: #0f1124;
+}
+
+.hud {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin: 0.75rem 0;
+}
+
+.hud div,
+.message {
+  background: var(--card);
+  border-radius: 10px;
+  padding: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.controls,
+.admin-actions,
+.color-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.7rem;
+}
+
+button,
+.import-label {
+  border: none;
+  background: #5e64c8;
+  color: white;
+  border-radius: 10px;
+  padding: 0.55rem 0.9rem;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+button:hover,
+.import-label:hover {
+  filter: brightness(1.1);
+}
+
+.quick-guide {
+  background: #272a4a;
+  border: 1px solid #3e4170;
+  border-radius: 12px;
+  padding: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.quick-guide h2 {
+  margin: 0 0 0.4rem;
+  font-size: 1.05rem;
+}
+
+.quick-guide ol {
+  margin: 0;
+  padding-left: 1.1rem;
+}
+
+.tip-box {
+  background: #2a2f55;
+  border-left: 4px solid #58d68d;
+  padding: 0.5rem 0.6rem;
+  border-radius: 8px;
+}
+
+.battle-ui {
+  margin-top: 0.75rem;
+  background: #272a4a;
+  border-radius: 12px;
+  padding: 0.75rem;
+}
+
+.hidden {
+  display: none;
+}
+
+label {
+  display: block;
+  margin-top: 0.6rem;
+}
+
+input[type="text"],
+textarea {
+  width: 100%;
+  margin-top: 0.25rem;
+  border-radius: 8px;
+  border: 1px solid #50558f;
+  background: #161832;
+  color: white;
+  padding: 0.5rem;
+}
+
+.dragon-item {
+  background: var(--card);
+  border-radius: 10px;
+  padding: 0.6rem;
+  margin-top: 0.5rem;
+}
+
+.dragon-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr auto;
+  gap: 0.4rem;
+}
+
+.import-label input {
+  display: none;
+}
+
+@media (max-width: 1000px) {
+  main {
+    grid-template-columns: 1fr;
+  }
+
+  .hud {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
