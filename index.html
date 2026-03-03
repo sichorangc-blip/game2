@@ -3,39 +3,38 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>샤이닝 프린세스: 레인보우 드래곤 어드벤처</title>
+    <title>샤이닝 프린세스: 버티컬 로그 러너</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <header>
-      <h1>✨ 샤이닝 프린세스: 레인보우 드래곤 어드벤처 ✨</h1>
-      <p>
-        도트 픽셀 러닝 액션 게임 · 검빛과 별마법으로 적을 정화하세요!
-      </p>
+      <h1>✨ 샤이닝 프린세스: 버티컬 로그 러너 ✨</h1>
+      <p>세로형 러닝 로그라이크 · 자동 검/마법/필살기 + 3키 이동 조작</p>
     </header>
 
     <main>
       <section class="game-panel">
         <div class="quick-guide" aria-label="처음 사용자 가이드">
-          <h2>처음 사용 가이드</h2>
+          <h2>조작 가이드 (단축키 3개)</h2>
           <ol>
-            <li>오른쪽 관리자 툴에서 스토리/드래곤을 원하는대로 수정</li>
-            <li><strong>설정 저장</strong> 버튼 클릭</li>
-            <li><strong>게임 시작</strong> 버튼 클릭</li>
-            <li>3키 조작: Z(검빛) · X(마법) · ↑(점프)</li>
+            <li><strong>←</strong> 좌이동 / <strong>→</strong> 우이동 / <strong>↑</strong> 점프</li>
+            <li>공격은 자동: 검, 마법, 필살기</li>
+            <li>아이템을 먹으면 공격/속도/필살기 성능이 강화</li>
+            <li>스테이지별 적 20명 처치 → 다음 스테이지, 10스테이지 후 보스</li>
           </ol>
           <div class="controls">
             <button id="guidePlayBtn" type="button">가이드대로 바로 시작</button>
           </div>
         </div>
 
-        <canvas id="game" width="640" height="360" aria-label="게임 화면"></canvas>
+        <canvas id="game" width="360" height="640" aria-label="게임 화면"></canvas>
 
         <div class="hud">
           <div><strong>스테이지:</strong> <span id="stageLabel">1</span></div>
           <div><strong>진행도:</strong> <span id="progressLabel">0%</span></div>
-          <div><strong>빛 에너지:</strong> <span id="energyLabel">5</span></div>
-          <div><strong>정화한 적:</strong> <span id="friendLabel">0</span></div>
+          <div><strong>에너지:</strong> <span id="energyLabel">8</span></div>
+          <div><strong>점수:</strong> <span id="scoreLabel">0</span></div>
+          <div><strong>처치:</strong> <span id="killLabel">0</span></div>
         </div>
 
         <div class="controls">
@@ -45,26 +44,25 @@
         </div>
 
         <div id="battleUI" class="battle-ui hidden">
-          <h2 id="battleTitle">아케이드 조작</h2>
-          <p id="battleHint">Z: 검빛 / X: 마법 / ↑: 점프</p>
+          <h2 id="battleTitle">스테이지 정보</h2>
+          <p id="battleHint">적 20명 처치 후 다음 스테이지로 진행됩니다.</p>
           <div id="actionButtons" class="color-buttons">
-            <button id="swordBtn" type="button">🗡️ 검빛</button>
-            <button id="magicBtn" type="button">✨ 마법</button>
+            <button id="leftBtn" type="button">⬅️ 좌이동</button>
+            <button id="rightBtn" type="button">➡️ 우이동</button>
             <button id="jumpBtn" type="button">⬆️ 점프</button>
           </div>
         </div>
 
         <div id="message" class="message"></div>
+
+        <section class="leaderboard">
+          <h3>🏆 점수 랭킹 (TOP 5)</h3>
+          <ol id="scoreList"></ol>
+        </section>
       </section>
 
       <aside class="admin-panel">
-        <h2>관리자 툴 (스토리/설정 편집)</h2>
-        <p>
-          코딩 없이 게임 데이터를 수정할 수 있어요. 저장하면 다음 실행부터 바로 반영됩니다.
-        </p>
-        <p class="tip-box">
-          ✅ 가장 쉬운 순서: <strong>제목/스토리 수정 → 설정 저장 → 게임 시작</strong>
-        </p>
+        <h2>관리자 툴 (스토리/이미지/설정 편집)</h2>
 
         <label>
           게임 제목
@@ -78,22 +76,38 @@
 
         <label>
           배경 스토리
-          <textarea id="cfgStory" rows="4"></textarea>
+          <textarea id="cfgStory" rows="3"></textarea>
         </label>
 
         <label>
           배경 이미지 업로드 (선택)
           <input id="bgUpload" type="file" accept="image/*" />
         </label>
+
+        <label>
+          주인공 이미지 업로드 (선택)
+          <input id="heroUpload" type="file" accept="image/*" />
+        </label>
+
+        <label>
+          적 이미지 업로드 (선택)
+          <input id="enemyUpload" type="file" accept="image/*" />
+        </label>
+
+        <label>
+          보스 이미지 업로드 (선택)
+          <input id="bossUpload" type="file" accept="image/*" />
+        </label>
+
         <label>
           픽셀 강도
           <input id="pixelSize" type="range" min="2" max="20" value="8" />
         </label>
         <canvas id="pixelPreview" width="320" height="180" aria-label="픽셀 미리보기"></canvas>
 
-        <h3>드래곤 설정</h3>
+        <h3>적 아키타입 설정</h3>
         <div id="dragonList"></div>
-        <button id="addDragonBtn" type="button">드래곤 추가</button>
+        <button id="addDragonBtn" type="button">적 추가</button>
 
         <div class="admin-actions">
           <button id="saveConfigBtn" type="button">설정 저장</button>
@@ -107,9 +121,7 @@
     </main>
 
     <footer>
-      <small>
-        팁: 이 게임은 PWA 형태로 제작되어, 나중에 Capacitor(무료)로 안드로이드/iOS 앱으로 빌드할 수 있습니다.
-      </small>
+      <small>Capacitor로 Android/iOS 앱 패키징 가능</small>
     </footer>
 
     <script src="app.js"></script>

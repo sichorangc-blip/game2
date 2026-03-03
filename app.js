@@ -1,57 +1,48 @@
 const DEFAULT_CONFIG = {
-  title: "샤이닝 프린세스: 레인보우 러너",
+  title: "샤이닝 프린세스: 버티컬 로그 러너",
   heroName: "샤이닝 프린세스",
-  story:
-    "점프, 검의 빛, 별마법 3가지 조작으로 스테이지를 클리어하세요! 10개 스테이지를 넘어 최종 보스를 정화하면 승리!",
+  story: "좌우 이동과 점프로 생존하고, 자동으로 발동되는 검/마법/필살기로 적을 물리치세요!",
   pixelSize: 8,
   dragons: [
-    { name: "루비 미니", color: "#ef476f", calmNeed: 2 },
-    { name: "썬샤인 미니", color: "#ffd166", calmNeed: 2 },
-    { name: "리프 미니", color: "#06d6a0", calmNeed: 3 },
-    { name: "오션 미니", color: "#118ab2", calmNeed: 3 },
-    { name: "바이올렛 미니", color: "#9b5de5", calmNeed: 4 }
+    { name: "루비몽", color: "#ef476f", calmNeed: 2 },
+    { name: "썬몽", color: "#ffd166", calmNeed: 2 },
+    { name: "리프몽", color: "#06d6a0", calmNeed: 3 }
   ],
-  backgroundImage: ""
+  backgroundImage: "",
+  heroImage: "",
+  enemyImage: "",
+  bossImage: ""
 };
 
-const STAGE_TARGET = 20;
+const STORAGE_KEY = "shining_princess_config_v2";
+const SCORE_KEY = "shining_princess_scores_v1";
 const FINAL_STAGE = 10;
-const STORAGE_KEY = "shining_princess_config_v1";
-
-const STAGE_THEMES = [
-  { name: "벚꽃 초원", sky1: "#232046", sky2: "#3d2f63", ground: "#6e5d88", deco: "#f4a3c3" },
-  { name: "별빛 언덕", sky1: "#1b234f", sky2: "#2f3f7f", ground: "#5d70a6", deco: "#d6e7ff" },
-  { name: "민트 숲", sky1: "#14333f", sky2: "#1f5561", ground: "#3f7d78", deco: "#8de0cc" },
-  { name: "노을 사막", sky1: "#4a2b2b", sky2: "#93504f", ground: "#b7775b", deco: "#ffd39a" },
-  { name: "오로라 빙원", sky1: "#173350", sky2: "#2a5c77", ground: "#6eb5d6", deco: "#d7fbff" },
-  { name: "보랏빛 계곡", sky1: "#2c1f4f", sky2: "#5a3f87", ground: "#8a65ba", deco: "#cab8ff" },
-  { name: "하트 정원", sky1: "#5a1f45", sky2: "#8f376a", ground: "#bc6291", deco: "#ffd0e7" },
-  { name: "무지개 다리", sky1: "#183544", sky2: "#2f5f7d", ground: "#62a1c9", deco: "#fce38a" },
-  { name: "크리스탈 동굴", sky1: "#14243a", sky2: "#25466a", ground: "#4f7ab2", deco: "#9ed2ff" },
-  { name: "왕국 성벽", sky1: "#262244", sky2: "#4b4472", ground: "#746f9d", deco: "#f7e9a6" }
-];
+const STAGE_TARGET = 20;
 
 const state = {
   config: loadConfig(),
   started: false,
   paused: false,
   stage: 1,
-  enemiesDefeated: 0,
-  totalDefeated: 0,
+  kills: 0,
+  stageKills: 0,
+  score: 0,
   progress: 0,
   energy: 8,
-  animationId: null,
-  lastTs: 0,
-  worldOffset: 0,
-  hero: { x: 120, y: 248, vy: 0, onGround: true, swordUntil: 0 },
+  hero: { x: 170, y: 520, vy: 0, onGround: true },
   enemies: [],
   projectiles: [],
-  itemDrops: [],
-  spawnTimer: 40,
-  spawnedInStage: 0,
+  skills: [],
+  items: [],
   boss: null,
-  buffs: { speedUntil: 0, powerUntil: 0 },
-  keys: {}
+  spawnTimer: 30,
+  spawned: 0,
+  worldOffset: 0,
+  animationId: null,
+  lastTs: 0,
+  keys: {},
+  upgrades: { sword: 1, magic: 1, ultimate: 1, speed: 1 },
+  cooldowns: { sword: 0, magic: 0, ultimate: 0 }
 };
 
 const el = {
@@ -59,7 +50,9 @@ const el = {
   stageLabel: document.getElementById("stageLabel"),
   progressLabel: document.getElementById("progressLabel"),
   energyLabel: document.getElementById("energyLabel"),
-  friendLabel: document.getElementById("friendLabel"),
+  scoreLabel: document.getElementById("scoreLabel"),
+  killLabel: document.getElementById("killLabel"),
+  scoreList: document.getElementById("scoreList"),
   startBtn: document.getElementById("startBtn"),
   pauseBtn: document.getElementById("pauseBtn"),
   resetBtn: document.getElementById("resetBtn"),
@@ -67,8 +60,8 @@ const el = {
   battleUI: document.getElementById("battleUI"),
   battleTitle: document.getElementById("battleTitle"),
   battleHint: document.getElementById("battleHint"),
-  swordBtn: document.getElementById("swordBtn"),
-  magicBtn: document.getElementById("magicBtn"),
+  leftBtn: document.getElementById("leftBtn"),
+  rightBtn: document.getElementById("rightBtn"),
   jumpBtn: document.getElementById("jumpBtn"),
   cfgTitle: document.getElementById("cfgTitle"),
   cfgHeroName: document.getElementById("cfgHeroName"),
@@ -79,6 +72,9 @@ const el = {
   exportConfigBtn: document.getElementById("exportConfigBtn"),
   importConfigInput: document.getElementById("importConfigInput"),
   bgUpload: document.getElementById("bgUpload"),
+  heroUpload: document.getElementById("heroUpload"),
+  enemyUpload: document.getElementById("enemyUpload"),
+  bossUpload: document.getElementById("bossUpload"),
   pixelSize: document.getElementById("pixelSize"),
   pixelPreview: document.getElementById("pixelPreview"),
   guidePlayBtn: document.getElementById("guidePlayBtn")
@@ -90,9 +86,10 @@ const pctx = el.pixelPreview.getContext("2d");
 setupAdminUI();
 wireEvents();
 refreshUI();
+renderScores();
 setBattleText();
 renderFrame();
-say("조작키 3개: Z(검빛), X(마법), ↑(점프) · 모바일은 버튼 3개");
+say("단축키: ← → ↑ (공격은 자동 발동)");
 
 function wireEvents() {
   el.startBtn.addEventListener("click", () => {
@@ -106,32 +103,12 @@ function wireEvents() {
     state.paused = false;
     loop();
   });
-
   el.pauseBtn.addEventListener("click", () => {
     state.paused = !state.paused;
     if (!state.paused) loop();
     else cancelAnimationFrame(state.animationId);
   });
-
   el.resetBtn.addEventListener("click", resetGame);
-
-  el.addDragonBtn.addEventListener("click", () => {
-    state.config.dragons.push({ name: "새 적", color: "#ffffff", calmNeed: 2 });
-    renderDragonForm();
-  });
-
-  el.saveConfigBtn.addEventListener("click", () => {
-    pullConfigFromAdmin();
-    saveConfig();
-    setBattleText();
-    say("설정을 저장했어요.");
-  });
-
-  el.exportConfigBtn.addEventListener("click", exportConfig);
-  el.importConfigInput.addEventListener("change", importConfig);
-  el.bgUpload.addEventListener("change", handleBackgroundUpload);
-  el.pixelSize.addEventListener("input", renderPixelPreview);
-
   el.guidePlayBtn.addEventListener("click", () => {
     pullConfigFromAdmin();
     saveConfig();
@@ -140,73 +117,77 @@ function wireEvents() {
     loop();
   });
 
-  el.swordBtn.addEventListener("click", swordAttack);
-  el.magicBtn.addEventListener("click", castMagic);
+  el.leftBtn.addEventListener("pointerdown", () => (state.keys.ArrowLeft = true));
+  el.rightBtn.addEventListener("pointerdown", () => (state.keys.ArrowRight = true));
+  el.leftBtn.addEventListener("pointerup", () => (state.keys.ArrowLeft = false));
+  el.rightBtn.addEventListener("pointerup", () => (state.keys.ArrowRight = false));
   el.jumpBtn.addEventListener("click", jump);
 
-  window.addEventListener("keydown", (event) => {
-    if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "z", "x", "Z", "X"].includes(event.key)) {
-      event.preventDefault();
-    }
-    if (event.key === "ArrowUp") jump();
-    if (event.key.toLowerCase() === "z") swordAttack();
-    if (event.key.toLowerCase() === "x") castMagic();
-    state.keys[event.key] = true;
+  window.addEventListener("keydown", (e) => {
+    if (["ArrowLeft", "ArrowRight", "ArrowUp"].includes(e.key)) e.preventDefault();
+    if (e.key === "ArrowUp") jump();
+    state.keys[e.key] = true;
+  });
+  window.addEventListener("keyup", (e) => {
+    state.keys[e.key] = false;
   });
 
-  window.addEventListener("keyup", (event) => {
-    state.keys[event.key] = false;
+  el.addDragonBtn.addEventListener("click", () => {
+    state.config.dragons.push({ name: "새 적", color: "#ffffff", calmNeed: 2 });
+    renderDragonForm();
   });
+  el.saveConfigBtn.addEventListener("click", () => {
+    pullConfigFromAdmin();
+    saveConfig();
+    say("설정을 저장했습니다.");
+  });
+  el.exportConfigBtn.addEventListener("click", exportConfig);
+  el.importConfigInput.addEventListener("change", importConfig);
+  el.bgUpload.addEventListener("change", (e) => handleImageUpload(e, "backgroundImage"));
+  el.heroUpload.addEventListener("change", (e) => handleImageUpload(e, "heroImage"));
+  el.enemyUpload.addEventListener("change", (e) => handleImageUpload(e, "enemyImage"));
+  el.bossUpload.addEventListener("change", (e) => handleImageUpload(e, "bossImage"));
+  el.pixelSize.addEventListener("input", renderPixelPreview);
 }
 
 function loop(ts = 0) {
   if (!state.started || state.paused) return;
-  const delta = state.lastTs ? Math.min((ts - state.lastTs) / 16.67, 1.8) : 1;
+  const delta = state.lastTs ? Math.min((ts - state.lastTs) / 16.67, 2) : 1;
   state.lastTs = ts;
-
-  update(delta, ts);
+  update(delta);
   renderFrame();
   state.animationId = requestAnimationFrame(loop);
 }
 
-function update(delta, ts) {
-  const now = ts || performance.now();
-  const speedBoost = now < state.buffs.speedUntil ? 1.45 : 1;
-  const runSpeed = 1.8 * speedBoost;
-  state.worldOffset += runSpeed * delta;
+function update(delta) {
+  const speed = 2 + (state.upgrades.speed - 1) * 0.25;
+  state.worldOffset += speed * delta;
 
-  applyGravity(delta);
+  moveHero(delta, speed);
   spawnEnemies(delta);
-  moveEnemies(delta, runSpeed);
-  moveProjectiles(delta);
-  moveItems(delta, runSpeed);
-  checkHeroCollisions();
+  updateEnemies(delta, speed);
+  autoUseSkills(delta);
+  updateProjectiles(delta);
+  updateItems(delta, speed);
+  updateBoss(delta, speed);
+  checkStageFlow();
 
-  if (!state.boss && state.spawnedInStage >= STAGE_TARGET && state.enemies.length === 0) {
-    if (state.stage < FINAL_STAGE) {
-      nextStage();
-    } else {
-      spawnBoss();
-    }
-  }
+  const base = ((state.stage - 1) / FINAL_STAGE) * 100;
+  state.progress = Math.min(100, base + (state.spawned / STAGE_TARGET) * (100 / FINAL_STAGE));
 
-  if (state.boss) {
-    updateBoss(delta);
-  }
-
-  const baseProgress = ((state.stage - 1) / FINAL_STAGE) * 100;
-  const stagePart = (Math.min(state.spawnedInStage, STAGE_TARGET) / STAGE_TARGET) * (100 / FINAL_STAGE);
-  state.progress = Math.min(100, baseProgress + stagePart);
-
+  if (state.energy <= 0) gameOver("에너지가 모두 소진되었습니다.");
   refreshUI();
 }
 
-function applyGravity(delta) {
-  const groundY = 248;
-  state.hero.vy += 0.42 * delta;
+function moveHero(delta, speed) {
+  if (state.keys.ArrowLeft) state.hero.x -= 4.2 * delta;
+  if (state.keys.ArrowRight) state.hero.x += 4.2 * delta;
+  state.hero.x = Math.max(16, Math.min(312, state.hero.x));
+
+  state.hero.vy += 0.48 * delta;
   state.hero.y += state.hero.vy * delta;
-  if (state.hero.y >= groundY) {
-    state.hero.y = groundY;
+  if (state.hero.y >= 520) {
+    state.hero.y = 520;
     state.hero.vy = 0;
     state.hero.onGround = true;
   } else {
@@ -214,324 +195,292 @@ function applyGravity(delta) {
   }
 }
 
-function spawnEnemies(delta) {
-  if (state.boss || state.spawnedInStage >= STAGE_TARGET) return;
-  state.spawnTimer -= delta;
-  if (state.spawnTimer > 0) return;
-
-  const archetype = state.config.dragons[state.spawnedInStage % state.config.dragons.length] || DEFAULT_CONFIG.dragons[0];
-  state.enemies.push({
-    name: archetype.name,
-    color: archetype.color,
-    hp: Math.max(1, archetype.calmNeed),
-    x: 700,
-    y: 248,
-    speed: 1 + Math.random() * 0.8 + state.stage * 0.03,
-    bob: Math.random() * 6
-  });
-  state.spawnedInStage += 1;
-  state.spawnTimer = Math.max(16, 40 - state.stage * 2);
-}
-
-function moveEnemies(delta, runSpeed) {
-  state.enemies = state.enemies.filter((enemy) => {
-    enemy.x -= (enemy.speed + runSpeed * 0.25) * delta;
-    enemy.y = 248 + Math.sin((state.worldOffset + enemy.bob) * 0.08) * 2;
-
-    if (enemy.x < -60) {
-      hurtHero(1, "적을 놓쳐서");
-      return false;
-    }
-
-    if (isSwordActive() && intersects(enemy, swordHitbox())) {
-      enemy.hp -= swordDamage();
-      if (enemy.hp <= 0) {
-        defeatEnemy(enemy);
-        return false;
-      }
-    }
-
-    const heroBox = { x: state.hero.x, y: state.hero.y, w: 32, h: 42 };
-    if (intersects(enemy, { ...heroBox, w: 34, h: 38 })) {
-      hurtHero(1, "적과 충돌해서");
-      enemy.x += 35;
-    }
-
-    return true;
-  });
-}
-
-function moveProjectiles(delta) {
-  state.projectiles = state.projectiles.filter((shot) => {
-    shot.x += shot.vx * delta;
-    if (shot.x > 700) return false;
-
-    for (const enemy of state.enemies) {
-      if (shot.x > enemy.x && shot.x < enemy.x + 36 && shot.y > enemy.y && shot.y < enemy.y + 36) {
-        enemy.hp -= shot.power;
-        if (enemy.hp <= 0) {
-          defeatEnemy(enemy);
-          state.enemies = state.enemies.filter((e) => e !== enemy);
-        }
-        return false;
-      }
-    }
-
-    if (state.boss && shot.x > state.boss.x && shot.x < state.boss.x + 90 && shot.y > state.boss.y && shot.y < state.boss.y + 70) {
-      state.boss.hp -= shot.power;
-      if (state.boss.hp <= 0) {
-        clearGame();
-      }
-      return false;
-    }
-
-    return true;
-  });
-}
-
-function moveItems(delta, runSpeed) {
-  state.itemDrops = state.itemDrops.filter((item) => {
-    item.x -= (1.5 + runSpeed * 0.2) * delta;
-    const heroBox = { x: state.hero.x, y: state.hero.y, w: 32, h: 40 };
-    if (intersects(item, heroBox)) {
-      if (item.type === "speed") {
-        state.buffs.speedUntil = performance.now() + 8000;
-        say("⚡ 속도 강화 8초!");
-      } else {
-        state.buffs.powerUntil = performance.now() + 8000;
-        say("✨ 공격 강화 8초!");
-      }
-      return false;
-    }
-    return item.x > -20;
-  });
-}
-
-function checkHeroCollisions() {
-  if (state.energy <= 0) {
-    state.started = false;
-    say("에너지가 모두 소진됐어요. 다시 도전해 보세요!");
-  }
-}
-
 function jump() {
   if (!state.started || !state.hero.onGround) return;
-  state.hero.vy = -7.6;
-  state.hero.onGround = false;
+  state.hero.vy = -8;
 }
 
-function swordAttack() {
-  if (!state.started) return;
-  state.hero.swordUntil = performance.now() + 180;
+function spawnEnemies(delta) {
+  if (state.boss || state.spawned >= STAGE_TARGET) return;
+  state.spawnTimer -= delta;
+  if (state.spawnTimer > 0) return;
+  const d = state.config.dragons[state.spawned % state.config.dragons.length] || DEFAULT_CONFIG.dragons[0];
+  const laneX = [40, 110, 180, 250, 320][Math.floor(Math.random() * 5)] - 16;
+  state.enemies.push({ x: laneX, y: -50, w: 32, h: 32, hp: d.calmNeed + state.stage * 0.15, color: d.color, name: d.name });
+  state.spawned += 1;
+  state.spawnTimer = Math.max(10, 28 - state.stage);
 }
 
-function castMagic() {
-  if (!state.started) return;
-  state.projectiles.push({
-    x: state.hero.x + 24,
-    y: state.hero.y + 16,
-    vx: 7.4,
-    power: magicDamage()
+function updateEnemies(delta, speed) {
+  state.enemies = state.enemies.filter((e) => {
+    e.y += (1.5 + speed * 0.5 + state.stage * 0.08) * delta;
+    if (intersects(e, heroBox())) {
+      state.energy -= 1;
+      return false;
+    }
+    if (e.y > 680) {
+      state.energy -= 1;
+      return false;
+    }
+    return true;
   });
 }
 
-function swordDamage() {
-  return performance.now() < state.buffs.powerUntil ? 2 : 1;
+function autoUseSkills(delta) {
+  state.cooldowns.sword -= delta;
+  state.cooldowns.magic -= delta;
+  state.cooldowns.ultimate -= delta;
+
+  if (state.cooldowns.sword <= 0) {
+    state.cooldowns.sword = Math.max(7, 22 - state.upgrades.sword * 2);
+    state.skills.push({ type: "sword", ttl: 8, r: 56 + state.upgrades.sword * 4 });
+    hitEnemiesAroundHero(1 + state.upgrades.sword * 0.45, 58 + state.upgrades.sword * 5);
+  }
+  if (state.cooldowns.magic <= 0) {
+    state.cooldowns.magic = Math.max(5, 18 - state.upgrades.magic * 1.8);
+    state.projectiles.push({ x: state.hero.x + 16, y: state.hero.y + 10, vy: -6.2, power: 1 + state.upgrades.magic * 0.55, w: 8, h: 12 });
+  }
+  if (state.cooldowns.ultimate <= 0) {
+    state.cooldowns.ultimate = Math.max(90, 240 - state.upgrades.ultimate * 20);
+    state.skills.push({ type: "ultimate", ttl: 22, r: 120 + state.upgrades.ultimate * 10 });
+    hitEnemiesAroundHero(3 + state.upgrades.ultimate, 122 + state.upgrades.ultimate * 12);
+  }
+
+  state.skills = state.skills.filter((s) => (s.ttl -= delta) > 0);
 }
 
-function magicDamage() {
-  return performance.now() < state.buffs.powerUntil ? 3 : 2;
+function updateProjectiles(delta) {
+  state.projectiles = state.projectiles.filter((p) => {
+    p.y += p.vy * delta;
+    for (const e of state.enemies) {
+      if (intersects(p, e)) {
+        e.hp -= p.power;
+        if (e.hp <= 0) killEnemy(e);
+        return false;
+      }
+    }
+    if (state.boss && intersects(p, state.boss)) {
+      state.boss.hp -= p.power;
+      if (state.boss.hp <= 0) clearGame();
+      return false;
+    }
+    return p.y > -20;
+  });
+
+  state.enemies = state.enemies.filter((e) => e.hp > 0);
 }
 
-function isSwordActive() {
-  return performance.now() < state.hero.swordUntil;
+function updateItems(delta, speed) {
+  state.items = state.items.filter((item) => {
+    item.y += (1.8 + speed * 0.4) * delta;
+    if (intersects(item, heroBox())) {
+      applyUpgrade(item.kind);
+      return false;
+    }
+    return item.y < 680;
+  });
 }
 
-function swordHitbox() {
-  return { x: state.hero.x + 28, y: state.hero.y + 4, w: 26, h: 32 };
+function updateBoss(delta, speed) {
+  if (!state.boss) return;
+  state.boss.y += state.boss.dir * (0.9 + speed * 0.15) * delta;
+  if (state.boss.y < 70 || state.boss.y > 260) state.boss.dir *= -1;
+  if (intersects(state.boss, heroBox())) state.energy -= 1;
 }
 
-function defeatEnemy(enemy) {
-  state.enemiesDefeated += 1;
-  state.totalDefeated += 1;
-  if (Math.random() < 0.22) {
-    state.itemDrops.push({
-      x: enemy.x,
-      y: enemy.y + 10,
-      w: 14,
-      h: 14,
-      type: Math.random() < 0.5 ? "speed" : "power"
-    });
+function checkStageFlow() {
+  if (!state.boss && state.spawned >= STAGE_TARGET && state.enemies.length === 0) {
+    if (state.stage < FINAL_STAGE) {
+      state.stage += 1;
+      state.stageKills = 0;
+      state.spawned = 0;
+      state.spawnTimer = 20;
+      say(`🌟 ${state.stage}스테이지 시작!`);
+    } else {
+      state.boss = { x: 130, y: 120, w: 96, h: 96, hp: 140, maxHp: 140, dir: 1 };
+      say("👑 최종 보스 등장!");
+    }
+    setBattleText();
   }
 }
 
-function nextStage() {
-  state.stage += 1;
-  state.spawnedInStage = 0;
-  state.enemiesDefeated = 0;
-  state.spawnTimer = 25;
-  say(`🌟 ${state.stage} 스테이지 시작! 이번에도 적 20명 정화!`);
-  setBattleText();
-}
-
-function spawnBoss() {
-  state.boss = { x: 690, y: 200, hp: 80, maxHp: 80, dir: -1 };
-  say("👑 최종 보스 등장! 검빛+마법으로 정화하세요!");
-  setBattleText();
-}
-
-function updateBoss(delta) {
-  state.boss.x += state.boss.dir * 0.8 * delta;
-  if (state.boss.x < 420 || state.boss.x > 700) state.boss.dir *= -1;
-
-  if (isSwordActive() && intersects({ x: state.boss.x, y: state.boss.y, w: 90, h: 70 }, swordHitbox())) {
-    state.boss.hp -= swordDamage();
-    if (state.boss.hp <= 0) clearGame();
+function killEnemy(enemy) {
+  state.kills += 1;
+  state.stageKills += 1;
+  state.score += 100 + state.stage * 10;
+  if (Math.random() < 0.25) {
+    const kinds = ["sword", "magic", "ultimate", "speed"];
+    state.items.push({ x: enemy.x + 8, y: enemy.y, w: 14, h: 14, kind: kinds[Math.floor(Math.random() * kinds.length)] });
   }
+}
 
-  if (intersects({ x: state.boss.x, y: state.boss.y, w: 88, h: 68 }, { x: state.hero.x, y: state.hero.y, w: 32, h: 40 })) {
-    hurtHero(1, "보스와 부딪혀서");
+function applyUpgrade(kind) {
+  if (kind === "speed") state.upgrades.speed = Math.min(8, state.upgrades.speed + 1);
+  if (kind === "sword") state.upgrades.sword = Math.min(8, state.upgrades.sword + 1);
+  if (kind === "magic") state.upgrades.magic = Math.min(8, state.upgrades.magic + 1);
+  if (kind === "ultimate") state.upgrades.ultimate = Math.min(8, state.upgrades.ultimate + 1);
+  state.score += 50;
+  say(`강화 획득: ${kind.toUpperCase()} Lv UP`);
+}
+
+function hitEnemiesAroundHero(damage, radius) {
+  const hx = state.hero.x + 16;
+  const hy = state.hero.y + 20;
+  for (const e of state.enemies) {
+    const dx = e.x + 16 - hx;
+    const dy = e.y + 16 - hy;
+    if (Math.hypot(dx, dy) <= radius) {
+      e.hp -= damage;
+      if (e.hp <= 0) killEnemy(e);
+    }
+  }
+  state.enemies = state.enemies.filter((e) => e.hp > 0);
+  if (state.boss) {
+    const dx = state.boss.x + 40 - hx;
+    const dy = state.boss.y + 40 - hy;
+    if (Math.hypot(dx, dy) <= radius + 20) {
+      state.boss.hp -= damage * 0.75;
+      if (state.boss.hp <= 0) clearGame();
+    }
   }
 }
 
 function clearGame() {
   state.progress = 100;
+  state.score += 5000;
+  saveScore("CLEAR");
   state.started = false;
-  say("🏆 클리어! 10스테이지 + 보스전 완료!");
+  say("🏆 클리어! 점수가 랭킹에 등록되었습니다.");
+  renderScores();
 }
 
-function hurtHero(amount, reason) {
-  state.energy -= amount;
-  say(`앗! ${reason} 에너지 -${amount}`);
+function gameOver(msg) {
+  saveScore("GAME OVER");
+  state.started = false;
+  say(`${msg} 점수가 랭킹에 등록되었습니다.`);
+  renderScores();
+}
+
+function heroBox() {
+  return { x: state.hero.x, y: state.hero.y, w: 32, h: 40 };
 }
 
 function intersects(a, b) {
-  return a.x < b.x + (b.w || 36) && a.x + (a.w || 36) > b.x && a.y < b.y + (b.h || 36) && a.y + (a.h || 36) > b.y;
+  return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
 }
 
 function renderFrame() {
   const { width, height } = el.canvas;
   ctx.clearRect(0, 0, width, height);
-
   drawBackground(width, height);
-  drawGround(width, height);
+  drawLanes(width, height);
   drawHero();
-
   state.enemies.forEach(drawEnemy);
-  state.projectiles.forEach(drawMagicShot);
-  state.itemDrops.forEach(drawItem);
-
+  state.projectiles.forEach(drawProjectile);
+  state.items.forEach(drawItem);
+  state.skills.forEach(drawSkill);
   if (state.boss) drawBoss();
-  drawProgressBar(width);
-  drawBuffs();
+  drawProgress(width);
 }
 
 function drawBackground(width, height) {
-  const theme = STAGE_THEMES[(state.stage - 1) % STAGE_THEMES.length];
   if (!state.config.backgroundImage) {
     const grad = ctx.createLinearGradient(0, 0, 0, height);
-    grad.addColorStop(0, theme.sky1);
-    grad.addColorStop(1, theme.sky2);
+    grad.addColorStop(0, "#1b1c3c");
+    grad.addColorStop(1, "#2e4a7b");
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, width, height);
 
     for (let i = 0; i < 24; i += 1) {
-      const x = ((i * 47 - state.worldOffset * 0.6) % (width + 60)) - 20;
-      const y = 28 + ((i * 31) % 180);
-      ctx.fillStyle = theme.deco;
-      ctx.fillRect(x, y, 4, 4);
+      const y = ((i * 40 + state.worldOffset * 3) % (height + 20)) - 10;
+      const x = 20 + (i * 23) % (width - 30);
+      ctx.fillStyle = i % 2 ? "#d7ecff" : "#ffd9f8";
+      ctx.fillRect(x, y, 3, 3);
     }
-  } else {
-    drawPixelBackground(ctx, width, height, state.config.backgroundImage);
+    return;
   }
+  drawPixelBackground(ctx, width, height, state.config.backgroundImage);
 }
 
-function drawGround(width, height) {
-  const theme = STAGE_THEMES[(state.stage - 1) % STAGE_THEMES.length];
-  const groundY = height - 70;
-  ctx.fillStyle = theme.ground;
-  ctx.fillRect(0, groundY, width, height - groundY);
-
-  for (let i = -2; i < 16; i += 1) {
-    const x = ((i * 48 - state.worldOffset * 2.5) % (width + 60)) - 20;
-    ctx.fillStyle = i % 2 ? "rgba(255,255,255,0.17)" : "rgba(0,0,0,0.12)";
-    ctx.fillRect(x, groundY + 10, 28, 8);
+function drawLanes(width, height) {
+  ctx.fillStyle = "rgba(15,18,44,0.35)";
+  ctx.fillRect(0, 0, width, height);
+  for (let i = 1; i <= 4; i += 1) {
+    const x = (width / 5) * i;
+    ctx.fillStyle = "rgba(255,255,255,0.15)";
+    for (let y = (state.worldOffset * 5) % 40; y < height; y += 40) {
+      ctx.fillRect(x, y, 2, 20);
+    }
   }
 }
 
 function drawHero() {
-  const x = state.hero.x;
-  const y = state.hero.y;
-  const pixels = [
-    [0, 0, "#ffe0bd"], [1, 0, "#ffe0bd"], [0, 1, "#ff5fa2"], [1, 1, "#ff5fa2"],
-    [2, 1, "#f8c8dc"], [1, 2, "#ffffff"], [0, 2, "#9d4edd"], [2, 2, "#9d4edd"],
-    [1, 3, "#ffe66d"]
-  ];
-
-  pixels.forEach(([px, py, color]) => {
-    ctx.fillStyle = color;
-    ctx.fillRect(x + px * 10, y + py * 10, 10, 10);
-  });
-
-  if (isSwordActive()) {
-    ctx.fillStyle = "#f7f7ff";
-    ctx.fillRect(x + 30, y + 12, 22, 6);
-    ctx.fillStyle = "#9be7ff";
-    ctx.fillRect(x + 52, y + 12, 8, 6);
+  if (state.config.heroImage) {
+    drawImageData(state.config.heroImage, state.hero.x, state.hero.y, 34, 42);
+    return;
   }
+  ctx.fillStyle = "#ff6bb3";
+  ctx.fillRect(state.hero.x, state.hero.y, 30, 36);
+  ctx.fillStyle = "#ffe0bd";
+  ctx.fillRect(state.hero.x + 8, state.hero.y - 8, 14, 10);
 }
 
-function drawEnemy(enemy) {
-  ctx.fillStyle = enemy.color;
-  ctx.fillRect(enemy.x, enemy.y, 24, 24);
-  ctx.fillRect(enemy.x + 24, enemy.y + 8, 12, 12);
+function drawEnemy(e) {
+  if (state.config.enemyImage) {
+    drawImageData(state.config.enemyImage, e.x, e.y, 32, 32);
+    return;
+  }
+  ctx.fillStyle = e.color;
+  ctx.fillRect(e.x, e.y, 28, 28);
   ctx.fillStyle = "#fff";
-  ctx.fillRect(enemy.x + 28, enemy.y + 12, 3, 3);
-}
-
-function drawMagicShot(shot) {
-  ctx.fillStyle = "#ffd6ff";
-  ctx.fillRect(shot.x, shot.y, 8, 8);
-  ctx.fillStyle = "#ffffff";
-  ctx.fillRect(shot.x + 2, shot.y + 2, 4, 4);
-}
-
-function drawItem(item) {
-  ctx.fillStyle = item.type === "speed" ? "#7cf29a" : "#ffd166";
-  ctx.fillRect(item.x, item.y, 12, 12);
+  ctx.fillRect(e.x + 18, e.y + 8, 4, 4);
 }
 
 function drawBoss() {
-  ctx.fillStyle = "#ff7adf";
-  ctx.fillRect(state.boss.x, state.boss.y, 80, 60);
-  ctx.fillStyle = "#fff";
-  ctx.fillRect(state.boss.x + 58, state.boss.y + 20, 6, 6);
-
-  ctx.fillStyle = "#222944";
-  ctx.fillRect(430, 24, 180, 10);
-  ctx.fillStyle = "#ff4d8d";
-  ctx.fillRect(430, 24, (180 * state.boss.hp) / state.boss.maxHp, 10);
-}
-
-function drawProgressBar(width) {
-  ctx.fillStyle = "#222944";
-  ctx.fillRect(20, 10, width - 40, 16);
-  ctx.fillStyle = "#58d68d";
-  ctx.fillRect(20, 10, ((width - 40) * state.progress) / 100, 16);
-}
-
-function drawBuffs() {
-  const now = performance.now();
-  const buffs = [];
-  if (now < state.buffs.speedUntil) buffs.push("⚡속도UP");
-  if (now < state.buffs.powerUntil) buffs.push("✨공격UP");
-  if (buffs.length) {
-    ctx.fillStyle = "rgba(12,12,30,0.7)";
-    ctx.fillRect(20, 32, 120, 18);
-    ctx.fillStyle = "#fff";
-    ctx.font = "12px sans-serif";
-    ctx.fillText(buffs.join(" "), 24, 45);
+  if (state.config.bossImage) {
+    drawImageData(state.config.bossImage, state.boss.x, state.boss.y, state.boss.w, state.boss.h);
+  } else {
+    ctx.fillStyle = "#ff5da8";
+    ctx.fillRect(state.boss.x, state.boss.y, state.boss.w, state.boss.h);
   }
+  ctx.fillStyle = "#222944";
+  ctx.fillRect(20, 24, 160, 8);
+  ctx.fillStyle = "#ff477e";
+  ctx.fillRect(20, 24, (160 * state.boss.hp) / state.boss.maxHp, 8);
+}
+
+function drawProjectile(p) {
+  ctx.fillStyle = "#fff6ff";
+  ctx.fillRect(p.x, p.y, p.w, p.h);
+}
+
+function drawItem(item) {
+  const color = { sword: "#ff914d", magic: "#a66cff", ultimate: "#ffe066", speed: "#7cf29a" }[item.kind];
+  ctx.fillStyle = color;
+  ctx.fillRect(item.x, item.y, 12, 12);
+}
+
+function drawSkill(skill) {
+  const cx = state.hero.x + 16;
+  const cy = state.hero.y + 20;
+  ctx.strokeStyle = skill.type === "ultimate" ? "#ffe066" : "#9ae8ff";
+  ctx.lineWidth = skill.type === "ultimate" ? 5 : 3;
+  ctx.beginPath();
+  ctx.arc(cx, cy, skill.r, 0, Math.PI * 2);
+  ctx.stroke();
+}
+
+function drawProgress(width) {
+  ctx.fillStyle = "#1f274b";
+  ctx.fillRect(20, 10, width - 40, 12);
+  ctx.fillStyle = "#58d68d";
+  ctx.fillRect(20, 10, ((width - 40) * state.progress) / 100, 12);
+}
+
+function drawImageData(dataUrl, x, y, w, h) {
+  const img = new Image();
+  img.src = dataUrl;
+  ctx.drawImage(img, x, y, w, h);
 }
 
 function drawPixelBackground(context, width, height, dataUrl) {
@@ -552,13 +501,20 @@ function setBattleText() {
   el.battleUI.classList.remove("hidden");
   if (state.boss) {
     el.battleTitle.textContent = "최종 보스전";
-    el.battleHint.textContent = "Z: 검빛 · X: 마법 · ↑: 점프";
+    el.battleHint.textContent = "좌우 회피 + 자동공격으로 생존하세요.";
     return;
   }
+  el.battleTitle.textContent = `${state.stage} 스테이지`;
+  el.battleHint.textContent = `적 ${state.stageKills}/${STAGE_TARGET} 처치`;
+}
 
-  const theme = STAGE_THEMES[(state.stage - 1) % STAGE_THEMES.length];
-  el.battleTitle.textContent = `${state.stage} 스테이지 · ${theme.name}`;
-  el.battleHint.textContent = `이번 스테이지 목표: 적 20명 정화 (${Math.min(state.spawnedInStage, STAGE_TARGET)}/${STAGE_TARGET} 출현)`;
+function refreshUI() {
+  el.stageLabel.textContent = state.boss ? "BOSS" : String(state.stage);
+  el.progressLabel.textContent = `${Math.floor(state.progress)}%`;
+  el.energyLabel.textContent = String(Math.max(0, state.energy));
+  el.scoreLabel.textContent = String(state.score);
+  el.killLabel.textContent = String(state.kills);
+  setBattleText();
 }
 
 function setupAdminUI() {
@@ -575,20 +531,17 @@ function renderDragonForm() {
   state.config.dragons.forEach((dragon, idx) => {
     const wrap = document.createElement("div");
     wrap.className = "dragon-item";
-    wrap.innerHTML = `
-      <div class="dragon-row">
-        <input data-kind="name" data-idx="${idx}" type="text" value="${escapeHtml(dragon.name)}" />
-        <input data-kind="color" data-idx="${idx}" type="color" value="${dragon.color}" />
-        <input data-kind="calmNeed" data-idx="${idx}" type="number" min="1" max="6" value="${dragon.calmNeed}" />
-        <button data-remove="${idx}" type="button">삭제</button>
-      </div>`;
+    wrap.innerHTML = `<div class="dragon-row">
+      <input data-kind="name" data-idx="${idx}" type="text" value="${escapeHtml(dragon.name)}" />
+      <input data-kind="color" data-idx="${idx}" type="color" value="${dragon.color}" />
+      <input data-kind="calmNeed" data-idx="${idx}" type="number" min="1" max="6" value="${dragon.calmNeed}" />
+      <button data-remove="${idx}" type="button">삭제</button>
+    </div>`;
     el.dragonList.appendChild(wrap);
   });
-
   el.dragonList.querySelectorAll("button[data-remove]").forEach((btn) => {
     btn.addEventListener("click", () => {
-      const index = Number(btn.dataset.remove);
-      state.config.dragons.splice(index, 1);
+      state.config.dragons.splice(Number(btn.dataset.remove), 1);
       renderDragonForm();
     });
   });
@@ -599,16 +552,15 @@ function pullConfigFromAdmin() {
   state.config.heroName = el.cfgHeroName.value.trim() || DEFAULT_CONFIG.heroName;
   state.config.story = el.cfgStory.value.trim() || DEFAULT_CONFIG.story;
   state.config.pixelSize = Number(el.pixelSize.value) || 8;
-
-  const nextDragons = [];
+  const next = [];
   el.dragonList.querySelectorAll(".dragon-item").forEach((item) => {
-    const name = item.querySelector('input[data-kind="name"]').value.trim() || "이름 없는 적";
-    const color = item.querySelector('input[data-kind="color"]').value || "#ffffff";
-    const calmNeed = Math.max(1, Number(item.querySelector('input[data-kind="calmNeed"]').value) || 2);
-    nextDragons.push({ name, color, calmNeed });
+    next.push({
+      name: item.querySelector('input[data-kind="name"]').value.trim() || "적",
+      color: item.querySelector('input[data-kind="color"]').value || "#fff",
+      calmNeed: Math.max(1, Number(item.querySelector('input[data-kind="calmNeed"]').value) || 2)
+    });
   });
-
-  state.config.dragons = nextDragons.length ? nextDragons : DEFAULT_CONFIG.dragons;
+  state.config.dragons = next.length ? next : DEFAULT_CONFIG.dragons;
 }
 
 function saveConfig() {
@@ -643,24 +595,23 @@ function importConfig(event) {
   const reader = new FileReader();
   reader.onload = () => {
     try {
-      const parsed = JSON.parse(String(reader.result));
-      state.config = { ...structuredClone(DEFAULT_CONFIG), ...parsed };
+      state.config = { ...structuredClone(DEFAULT_CONFIG), ...JSON.parse(String(reader.result)) };
       setupAdminUI();
       saveConfig();
       say("설정 파일을 불러왔어요.");
     } catch {
-      say("JSON 파일 형식이 올바르지 않아요.");
+      say("JSON 파일 형식 오류입니다.");
     }
   };
   reader.readAsText(file, "utf-8");
 }
 
-function handleBackgroundUpload(event) {
+function handleImageUpload(event, key) {
   const file = event.target.files?.[0];
   if (!file) return;
   const reader = new FileReader();
   reader.onload = () => {
-    state.config.backgroundImage = String(reader.result);
+    state.config[key] = String(reader.result);
     renderPixelPreview();
   };
   reader.readAsDataURL(file);
@@ -669,60 +620,79 @@ function handleBackgroundUpload(event) {
 function renderPixelPreview() {
   const { width, height } = el.pixelPreview;
   pctx.clearRect(0, 0, width, height);
-
-  if (!state.config.backgroundImage) {
-    pctx.fillStyle = "#1a2040";
-    pctx.fillRect(0, 0, width, height);
-    pctx.fillStyle = "#9b5de5";
-    pctx.fillRect(40, 70, 40, 40);
-    pctx.fillStyle = "#ffd166";
-    pctx.fillRect(100, 60, 50, 50);
-    return;
+  pctx.fillStyle = "#1a2040";
+  pctx.fillRect(0, 0, width, height);
+  if (state.config.heroImage) {
+    const img = new Image();
+    img.onload = () => pctx.drawImage(img, 20, 40, 50, 60);
+    img.src = state.config.heroImage;
   }
-
-  const img = new Image();
-  img.onload = () => {
-    const size = Number(el.pixelSize.value) || 8;
-    pctx.imageSmoothingEnabled = false;
-    pctx.drawImage(img, 0, 0, Math.ceil(width / size), Math.ceil(height / size));
-    const frame = pctx.getImageData(0, 0, Math.ceil(width / size), Math.ceil(height / size));
-    pctx.clearRect(0, 0, width, height);
-    pctx.putImageData(frame, 0, 0);
-    pctx.drawImage(pctx.canvas, 0, 0, Math.ceil(width / size), Math.ceil(height / size), 0, 0, width, height);
-  };
-  img.src = state.config.backgroundImage;
+  if (state.config.enemyImage) {
+    const img = new Image();
+    img.onload = () => pctx.drawImage(img, 120, 60, 44, 44);
+    img.src = state.config.enemyImage;
+  }
+  if (state.config.bossImage) {
+    const img = new Image();
+    img.onload = () => pctx.drawImage(img, 210, 40, 90, 90);
+    img.src = state.config.bossImage;
+  }
 }
 
-function refreshUI() {
-  el.stageLabel.textContent = state.boss ? "Boss" : String(state.stage);
-  el.progressLabel.textContent = `${Math.floor(state.progress)}%`;
-  el.energyLabel.textContent = String(state.energy);
-  el.friendLabel.textContent = `${state.totalDefeated}`;
-  setBattleText();
+function saveScore(tag) {
+  const scores = loadScores();
+  scores.push({ score: state.score, stage: state.stage, tag, at: new Date().toISOString() });
+  scores.sort((a, b) => b.score - a.score);
+  localStorage.setItem(SCORE_KEY, JSON.stringify(scores.slice(0, 5)));
+}
+
+function loadScores() {
+  try {
+    return JSON.parse(localStorage.getItem(SCORE_KEY) || "[]");
+  } catch {
+    return [];
+  }
+}
+
+function renderScores() {
+  const scores = loadScores();
+  el.scoreList.innerHTML = "";
+  if (!scores.length) {
+    el.scoreList.innerHTML = "<li>아직 기록이 없습니다.</li>";
+    return;
+  }
+  scores.forEach((s) => {
+    const li = document.createElement("li");
+    li.textContent = `${s.score}점 · ${s.tag} · Stage ${s.stage}`;
+    el.scoreList.appendChild(li);
+  });
 }
 
 function resetGame() {
   state.started = false;
   state.paused = false;
   state.stage = 1;
-  state.enemiesDefeated = 0;
-  state.totalDefeated = 0;
+  state.kills = 0;
+  state.stageKills = 0;
+  state.score = 0;
   state.progress = 0;
   state.energy = 8;
-  state.lastTs = 0;
-  state.worldOffset = 0;
-  state.hero = { x: 120, y: 248, vy: 0, onGround: true, swordUntil: 0 };
+  state.hero = { x: 170, y: 520, vy: 0, onGround: true };
   state.enemies = [];
   state.projectiles = [];
-  state.itemDrops = [];
-  state.spawnTimer = 40;
-  state.spawnedInStage = 0;
+  state.skills = [];
+  state.items = [];
   state.boss = null;
-  state.buffs = { speedUntil: 0, powerUntil: 0 };
+  state.spawnTimer = 30;
+  state.spawned = 0;
+  state.worldOffset = 0;
+  state.lastTs = 0;
+  state.upgrades = { sword: 1, magic: 1, ultimate: 1, speed: 1 };
+  state.cooldowns = { sword: 0, magic: 0, ultimate: 0 };
   cancelAnimationFrame(state.animationId);
   refreshUI();
   renderFrame();
-  say("초기화 완료! 게임 시작을 누르면 1스테이지부터 시작됩니다.");
+  say("초기화 완료. 게임 시작 버튼을 눌러주세요.");
 }
 
 function say(text) {
@@ -730,10 +700,5 @@ function say(text) {
 }
 
 function escapeHtml(value) {
-  return value
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#39;");
+  return value.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#39;");
 }
