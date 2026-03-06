@@ -1,0 +1,132 @@
+:root {
+  --panel: #1f213a;
+  --card: #2c2f50;
+  --text: #f6f7ff;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: "Pretendard", "Noto Sans KR", system-ui, sans-serif;
+  background: linear-gradient(180deg, #10111f, #1a1d37);
+  color: var(--text);
+}
+
+header, footer { text-align: center; padding: 0.9rem; }
+
+main {
+  display: grid;
+  grid-template-columns: 420px minmax(280px, 1fr);
+  gap: 1rem;
+  padding: 1rem;
+  justify-content: center;
+}
+
+.game-panel, .admin-panel {
+  background: var(--panel);
+  border-radius: 16px;
+  padding: 1rem;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+#game {
+  width: 100%;
+  max-width: 360px;
+  margin: 0 auto;
+  display: block;
+  image-rendering: pixelated;
+  border: 3px solid #3e4170;
+  border-radius: 12px;
+  background: #0f1124;
+}
+
+#pixelPreview {
+  width: 100%;
+  image-rendering: pixelated;
+  border: 3px solid #3e4170;
+  border-radius: 12px;
+}
+
+.quick-guide, .battle-ui, .leaderboard {
+  background: #272a4a;
+  border: 1px solid #3e4170;
+  border-radius: 12px;
+  padding: 0.7rem;
+  margin-bottom: 0.7rem;
+}
+
+.quick-guide ol { margin: 0; padding-left: 1.1rem; }
+
+.hud {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.4rem;
+  margin: 0.7rem 0;
+}
+
+.hud div, .message {
+  background: var(--card);
+  border-radius: 10px;
+  padding: 0.45rem;
+  font-size: 0.9rem;
+}
+
+.controls, .admin-actions, .color-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.6rem;
+}
+
+button, .import-label {
+  border: none;
+  color: #fff;
+  border-radius: 10px;
+  padding: 0.5rem 0.85rem;
+  cursor: pointer;
+  font-weight: 700;
+  background: #5e64c8;
+}
+button:hover, .import-label:hover { filter: brightness(1.1); }
+
+#leftBtn { background: #5f70ff; }
+#rightBtn { background: #5f70ff; }
+#jumpBtn { background: #118ab2; }
+
+label { display: block; margin-top: 0.55rem; }
+input[type="text"], textarea {
+  width: 100%;
+  margin-top: 0.2rem;
+  border-radius: 8px;
+  border: 1px solid #50558f;
+  background: #161832;
+  color: #fff;
+  padding: 0.45rem;
+}
+
+.dragon-item {
+  background: var(--card);
+  border-radius: 10px;
+  padding: 0.55rem;
+  margin-top: 0.45rem;
+}
+.dragon-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 0.8fr auto;
+  gap: 0.35rem;
+}
+.import-label input { display: none; }
+
+.hidden { display: none; }
+
+.leaderboard ol {
+  margin: 0.4rem 0 0;
+  padding-left: 1.2rem;
+}
+
+@media (max-width: 980px) {
+  main { grid-template-columns: 1fr; }
+  .game-panel { order: 1; }
+  .admin-panel { order: 2; }
+}

@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>샤이닝 프린세스: 버티컬 로그 러너</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header>
+      <h1>✨ 샤이닝 프린세스: 버티컬 로그 러너 ✨</h1>
+      <p>세로형 러닝 로그라이크 · 자동 검/마법/필살기 + 3키 이동 조작</p>
+    </header>
+
+    <main>
+      <section class="game-panel">
+        <div class="quick-guide" aria-label="처음 사용자 가이드">
+          <h2>조작 가이드 (단축키 3개)</h2>
+          <ol>
+            <li><strong>←</strong> 좌이동 / <strong>→</strong> 우이동 / <strong>↑</strong> 점프</li>
+            <li>공격은 자동: 검, 마법, 필살기</li>
+            <li>아이템을 먹으면 공격/속도/필살기 성능이 강화</li>
+            <li>스테이지별 적 20명 처치 → 다음 스테이지, 10스테이지 후 보스</li>
+          </ol>
+          <div class="controls">
+            <button id="guidePlayBtn" type="button">가이드대로 바로 시작</button>
+          </div>
+        </div>
+
+        <canvas id="game" width="360" height="640" aria-label="게임 화면"></canvas>
+
+        <div class="hud">
+          <div><strong>스테이지:</strong> <span id="stageLabel">1</span></div>
+          <div><strong>진행도:</strong> <span id="progressLabel">0%</span></div>
+          <div><strong>에너지:</strong> <span id="energyLabel">8</span></div>
+          <div><strong>점수:</strong> <span id="scoreLabel">0</span></div>
+          <div><strong>처치:</strong> <span id="killLabel">0</span></div>
+        </div>
+
+        <div class="controls">
+          <button id="startBtn">게임 시작</button>
+          <button id="pauseBtn">일시정지</button>
+          <button id="resetBtn">처음부터</button>
+        </div>
+
+        <div id="battleUI" class="battle-ui hidden">
+          <h2 id="battleTitle">스테이지 정보</h2>
+          <p id="battleHint">적 20명 처치 후 다음 스테이지로 진행됩니다.</p>
+          <div id="actionButtons" class="color-buttons">
+            <button id="leftBtn" type="button">⬅️ 좌이동</button>
+            <button id="rightBtn" type="button">➡️ 우이동</button>
+            <button id="jumpBtn" type="button">⬆️ 점프</button>
+          </div>
+        </div>
+
+        <div id="message" class="message"></div>
+
+        <section class="leaderboard">
+          <h3>🏆 점수 랭킹 (TOP 5)</h3>
+          <ol id="scoreList"></ol>
+        </section>
+      </section>
+
+      <aside class="admin-panel">
+        <h2>관리자 툴 (스토리/이미지/설정 편집)</h2>
+
+        <label>
+          게임 제목
+          <input id="cfgTitle" type="text" />
+        </label>
+
+        <label>
+          프린세스 이름
+          <input id="cfgHeroName" type="text" />
+        </label>
+
+        <label>
+          배경 스토리
+          <textarea id="cfgStory" rows="3"></textarea>
+        </label>
+
+        <label>
+          배경 이미지 업로드 (선택)
+          <input id="bgUpload" type="file" accept="image/*" />
+        </label>
+
+        <label>
+          주인공 이미지 업로드 (선택)
+          <input id="heroUpload" type="file" accept="image/*" />
+        </label>
+
+        <label>
+          적 이미지 업로드 (선택)
+          <input id="enemyUpload" type="file" accept="image/*" />
+        </label>
+
+        <label>
+          보스 이미지 업로드 (선택)
+          <input id="bossUpload" type="file" accept="image/*" />
+        </label>
+
+        <label>
+          픽셀 강도
+          <input id="pixelSize" type="range" min="2" max="20" value="8" />
+        </label>
+        <canvas id="pixelPreview" width="320" height="180" aria-label="픽셀 미리보기"></canvas>
+
+        <h3>적 아키타입 설정</h3>
+        <div id="dragonList"></div>
+        <button id="addDragonBtn" type="button">적 추가</button>
+
+        <div class="admin-actions">
+          <button id="saveConfigBtn" type="button">설정 저장</button>
+          <button id="exportConfigBtn" type="button">JSON 내보내기</button>
+          <label class="import-label">
+            JSON 불러오기
+            <input id="importConfigInput" type="file" accept="application/json" />
+          </label>
+        </div>
+      </aside>
+    </main>
+
+    <footer>
+      <small>Capacitor로 Android/iOS 앱 패키징 가능</small>
+    </footer>
+
+    <script src="app.js"></script>
+  </body>
+</html>
