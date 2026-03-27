@@ -1,5 +1,27 @@
 # Quant Tracker (수동 퀀트 투자 추적기)
 
+## 내 컴퓨터로 다운로드(설치) 방법
+
+### 방법 A) ZIP으로 받기 (가장 쉬움)
+
+1. 이 프로젝트가 올라간 Git 저장소 페이지를 엽니다.
+2. **Code** 버튼 → **Download ZIP** 클릭
+3. 다운로드된 ZIP 압축을 풉니다.
+4. 압축 푼 폴더 안에서 `start_web_tracker.bat`(윈도우) 또는 `start_web_tracker.sh`(리눅스/맥)를 실행합니다.
+
+### 방법 B) git으로 받기 (개발자용)
+
+터미널(명령 프롬프트)에서 아래를 입력합니다.
+
+```bash
+git clone <저장소주소>
+cd <폴더명>
+```
+
+그 다음 `start_web_tracker.bat` 또는 `start_web_tracker.sh` 실행.
+
+---
+
 
 ## 진짜 쉬운 실행 방법 (명령어 몰라도 됨)
 
