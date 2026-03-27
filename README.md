@@ -1,155 +1,93 @@
-# Quant Tracker (수동 퀀트 투자 추적기)
+# Quant Tracker (추천 종목 발굴 + 선택 후 수익률 트래킹)
 
-## 내 컴퓨터로 다운로드(설치) 방법
+요청하신 흐름에 맞춘 프로그램입니다.
 
-## 문제 해결: 폴더에 `.gitkeep`만 보일 때
-
-이 경우는 **프로그램 파일을 아직 안 받은 상태**입니다.
-`.gitkeep`은 "빈 폴더" 표시용 파일이라 실행 파일이 아닙니다.
-
-### 해결 방법
-
-1. Git 저장소 페이지로 이동
-2. **Code → Download ZIP**
-3. ZIP 압축 해제 후 폴더 안에 아래 파일들이 있는지 확인
-   - `quant_tracker.py`
-   - `web_tracker.py`
-   - `start_web_tracker.bat` (윈도우)
-   - `start_web_tracker.sh` (리눅스/맥)
-4. 그 다음 `start_web_tracker.bat` 더블클릭(윈도우 기준)
-
-### 방법 A) ZIP으로 받기 (가장 쉬움)
-
-1. 이 프로젝트가 올라간 Git 저장소 페이지를 엽니다.
-2. **Code** 버튼 → **Download ZIP** 클릭
-3. 다운로드된 ZIP 압축을 풉니다.
-4. 압축 푼 폴더 안에서 `start_web_tracker.bat`(윈도우) 또는 `start_web_tracker.sh`(리눅스/맥)를 실행합니다.
-
-### 방법 B) git으로 받기 (개발자용)
-
-터미널(명령 프롬프트)에서 아래를 입력합니다.
-
-```bash
-git clone <저장소주소>
-cd <폴더명>
-```
-
-그 다음 `start_web_tracker.bat` 또는 `start_web_tracker.sh` 실행.
+1. 매일 퀀트 조건으로 **추천 종목 발굴** (`screen`)
+2. 사용자가 추천 종목 중 일부를 **선택** (`select`)
+3. 선택된 종목만 TP/SL 규칙으로 **수익률 트래킹/매니징** (`mark-all`, `status`)
 
 ---
 
+## 1) 가장 쉬운 실행 (웹 화면)
 
-## 진짜 쉬운 실행 방법 (명령어 몰라도 됨)
+- Windows: `start_web_tracker.bat` 더블클릭
+- macOS/Linux: `start_web_tracker.sh` 실행
+- 브라우저 주소: `http://127.0.0.1:8501`
 
-### 방법 1) 주소 입력해서 쓰기 (추천)
-
-1. 파일 탐색기에서 프로젝트 폴더를 엽니다.
-2. `start_web_tracker.sh`(리눅스/맥) 또는 `start_web_tracker.bat`(윈도우)를 실행합니다.
-3. 브라우저 주소창에 아래 주소를 입력합니다.
-
-```text
-http://127.0.0.1:8501
-```
-
-그러면 웹 화면에서 버튼/입력칸으로 매수/마킹/청산/현황 확인을 할 수 있습니다.
-
-### 방법 2) 터미널에서 직접 실행
-
-아래 명령은 **터미널(명령 프롬프트)** 에 입력해야 합니다.
-
-```bash
-python3 quant_tracker.py --help
-```
-
-직접 자동매매를 하지 않고,
-- 매수 포지션 등록
-- 매일 가격 마킹
-- 익절(TP)/손절(SL) 자동 청산
-- 누적 수익률(총자산 기준) 관리
-를 할 수 있는 CLI 프로그램입니다.
-
-
-## 0) 정말 빠르게 실행해보기 (처음 사용자용)
-
-### A. 파이썬 버전 확인
-
-```bash
-python3 --version
-```
-
-### B. 도움말 보기
-
-```bash
-python3 quant_tracker.py --help
-```
-
-### C. 예제 한 번에 실행
-
-```bash
-./run_example.sh
-```
-
-> 위 스크립트는 `tracker_data.json`을 초기화(`--force`)하므로 기존 기록이 있으면 덮어씁니다.
+웹 화면에서
+- `1) 일일 추천 종목 발굴(screen)`
+- `2) 추천 종목 선택(select)`
+- `3) 가격 마킹`
+- `4) 수동 청산`
+순으로 사용하면 됩니다.
 
 ---
-## 1) 시작
+
+## 2) CLI로 쓰는 방법
+
+### 2-1. 초기화
 
 ```bash
-python3 quant_tracker.py init --initial-capital 10000000
+python3 quant_tracker.py init --initial-capital 10000000 --force
 ```
 
-기본 저장 파일은 `tracker_data.json` 입니다.
-
-## 2) 종목 등록(가상 매수)
+### 2-2. 매일 추천 종목 발굴
 
 ```bash
-python3 quant_tracker.py buy AAPL --price 180 --qty 10 --tp 8 --sl 4
-python3 quant_tracker.py buy MSFT --price 420 --qty 5 --tp 6 --sl 3
+python3 quant_tracker.py screen --source-csv sample_factors.csv --asof 2026-03-27 --top-n 5
+python3 quant_tracker.py reco --asof 2026-03-27
 ```
 
-- `--tp 8` => +8% 수익 도달 시 자동 청산
-- `--sl 4` => -4% 손실 도달 시 자동 청산
-
-## 3) 매일 가격 입력(트래킹)
-
-단일 종목:
+### 2-3. 추천 종목 중 선택해서 트래킹 시작
 
 ```bash
-python3 quant_tracker.py mark AAPL --price 189
+python3 quant_tracker.py select --asof 2026-03-27 --tickers AAPL,MSFT --budget-per-stock 1000000 --tp 8 --sl 4
 ```
 
-여러 종목 한번에:
+### 2-4. 매일 가격 업데이트(트래킹)
 
 ```bash
-python3 quant_tracker.py mark-all --prices "AAPL=189,MSFT=408"
-```
-
-가격 입력 시 열린 포지션의 수익률을 계산하고,
-TP/SL 조건 만족 시 자동으로 청산됩니다.
-
-## 4) 현황 확인
-
-```bash
+python3 quant_tracker.py mark-all --prices "AAPL=191,MSFT=417"
 python3 quant_tracker.py status
 ```
 
-출력 정보:
-- 초기자본
-- 현금
-- 오픈 포지션 평가금액
-- 총자산(Equity)
-- 실현손익
-- 누적 수익률
-- 현재 열린 포지션 목록
+---
 
-## 5) 수동 청산
+## 3) 스크리닝 입력 CSV 형식
 
-```bash
-python3 quant_tracker.py close 1 --price 192 --reason "event risk"
+파일에는 아래 컬럼이 **반드시** 있어야 합니다.
+
+- `ticker`
+- `close`
+- `ret_20d`
+- `ret_60d`
+- `vol20`
+- `pe`
+- `roe`
+
+예시 (`sample_factors.csv`):
+
+```csv
+ticker,close,ret_20d,ret_60d,vol20,pe,roe
+AAPL,187.2,5.1,12.4,1200000,24.3,18.2
+MSFT,421.5,4.8,10.9,900000,30.1,21.0
+NVDA,980.0,8.7,20.2,1800000,35.0,32.0
+GOOGL,168.3,3.5,8.1,700000,22.4,15.4
+AMZN,192.0,4.1,9.3,1100000,27.5,17.0
 ```
 
-## 운영 팁
+> `screen`은 기본적으로 거래대금/밸류/수익성 조건을 필터하고,
+> 점수(score) 기준 상위 종목을 추천합니다.
 
-- 매일 장 마감 후 `mark-all`로 종가 업데이트
-- TP/SL은 전략별로 다르게 설정
-- `tracker_data.json` 파일을 백업해두면 기록 관리에 유리
+---
+
+## 4) 실행 파일이 하나만 보일 때
+
+폴더에 `.gitkeep`만 보이면 실제 프로그램 파일이 아직 없는 상태입니다.
+
+- 저장소에서 `Code → Download ZIP`
+- 압축 해제 후 아래 파일 확인
+  - `quant_tracker.py`
+  - `web_tracker.py`
+  - `start_web_tracker.bat` / `start_web_tracker.sh`
+
