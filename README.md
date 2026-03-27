@@ -7,6 +7,30 @@
 - 누적 수익률(총자산 기준) 관리
 를 할 수 있는 CLI 프로그램입니다.
 
+
+## 0) 정말 빠르게 실행해보기 (처음 사용자용)
+
+### A. 파이썬 버전 확인
+
+```bash
+python3 --version
+```
+
+### B. 도움말 보기
+
+```bash
+python3 quant_tracker.py --help
+```
+
+### C. 예제 한 번에 실행
+
+```bash
+./run_example.sh
+```
+
+> 위 스크립트는 `tracker_data.json`을 초기화(`--force`)하므로 기존 기록이 있으면 덮어씁니다.
+
+---
 ## 1) 시작
 
 ```bash
