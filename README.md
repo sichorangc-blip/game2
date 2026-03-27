@@ -2,6 +2,22 @@
 
 ## 내 컴퓨터로 다운로드(설치) 방법
 
+## 문제 해결: 폴더에 `.gitkeep`만 보일 때
+
+이 경우는 **프로그램 파일을 아직 안 받은 상태**입니다.
+`.gitkeep`은 "빈 폴더" 표시용 파일이라 실행 파일이 아닙니다.
+
+### 해결 방법
+
+1. Git 저장소 페이지로 이동
+2. **Code → Download ZIP**
+3. ZIP 압축 해제 후 폴더 안에 아래 파일들이 있는지 확인
+   - `quant_tracker.py`
+   - `web_tracker.py`
+   - `start_web_tracker.bat` (윈도우)
+   - `start_web_tracker.sh` (리눅스/맥)
+4. 그 다음 `start_web_tracker.bat` 더블클릭(윈도우 기준)
+
 ### 방법 A) ZIP으로 받기 (가장 쉬움)
 
 1. 이 프로젝트가 올라간 Git 저장소 페이지를 엽니다.
