@@ -5,11 +5,23 @@
 
 ## 1) 로컬에서 바로 실행 (웹)
 
+### 가장 쉬운 방법 (Windows / macOS / Linux 공통)
+
 ```bash
-python3 -m http.server 8080
+npm install
+npm run serve
 ```
 
 브라우저에서 `http://localhost:8080` 접속 후 사용하세요.
+
+### Windows PowerShell에서 Python으로 실행하고 싶다면
+
+```powershell
+python -m http.server 8080
+```
+
+> `python3`는 PowerShell 기본 환경에서 없을 수 있습니다.
+> `bash python3 ...` 형태는 WSL이 필요하므로, WSL이 없다면 위 `python` 또는 `npm run serve`를 사용하세요.
 
 ---
 
