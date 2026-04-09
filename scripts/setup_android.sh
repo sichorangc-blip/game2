@@ -9,6 +9,9 @@ fi
 echo "1) 의존성 설치"
 npm install
 
+echo "1-1) Capacitor용 웹 자산 준비(www)"
+npm run cap:prepare
+
 if [ ! -d "android" ]; then
   echo "2) Android 프로젝트 생성 (최초 1회)"
   npx cap add android

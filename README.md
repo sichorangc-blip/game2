@@ -44,6 +44,7 @@ taskkill /PID <PID번호> /F
 
 ```powershell
 npm install
+npm run cap:prepare
 npx cap add android
 npx cap sync android
 cd android
@@ -57,6 +58,7 @@ npm run apk:build:win
 위 스크립트는 다음을 자동 수행합니다:
 - `npm install`
 - TypeScript 보정 설치(호환성 목적)
+- Capacitor 웹 자산 준비(`www` 폴더 생성)
 - `npx cap add android` (없을 때만)
 - `npx cap sync android`
 - `.\gradlew.bat assembleDebug`
@@ -67,6 +69,9 @@ npm run apk:build:win
 - `Could not find installation of TypeScript`  
   → 스크립트가 TypeScript 보정 설치를 자동으로 시도합니다.  
   네트워크 제한 등으로 실패하면 `npm install -D typescript`를 직접 1회 실행 후 재시도하세요.
+- `\".\" is not a valid value for webDir`  
+  → 현재 설정은 `webDir: \"www\"`이며, `npm run cap:prepare`가 `www`를 생성합니다.  
+  수동 실행 시 `npm run cap:prepare`를 먼저 실행한 뒤 `npx cap add android`를 실행하세요.
 - PowerShell 파서 오류(문자 깨짐/문자열 종료 안 됨)  
   → `scripts/build_android_debug.ps1`를 ASCII 메시지로 정리해 인코딩 이슈를 줄였습니다.  
   기존 압축본을 재사용 중이라면 최신 파일로 덮어쓴 뒤 다시 실행하세요.

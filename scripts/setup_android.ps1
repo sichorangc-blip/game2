@@ -25,6 +25,9 @@ Invoke-Step "npm install" "npm install failed."
 Write-Host "1-1) Ensure TypeScript exists for Capacitor compatibility"
 Invoke-Step "npm install -D typescript --no-save" "TypeScript install failed."
 
+Write-Host "1-2) Prepare web assets for Capacitor (www)"
+Invoke-Step "npm run cap:prepare" "Failed to prepare web assets."
+
 if (-not (Test-Path "android")) {
   Write-Host "2) Add Android platform (first time only)"
   Invoke-Step "npx cap add android" "Failed to add Android platform."

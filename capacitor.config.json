@@ -1,6 +1,6 @@
 {
   "appId": "com.ttobak.kids",
   "appName": "또박키즈",
-  "webDir": ".",
+  "webDir": "www",
   "bundledWebRuntime": false
 }
