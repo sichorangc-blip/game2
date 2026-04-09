@@ -54,11 +54,19 @@ cd android
 ```powershell
 npm run apk:build:win
 ```
+위 스크립트는 다음을 자동 수행합니다:
+- `npm install`
+- TypeScript 보정 설치(호환성 목적)
+- `npx cap add android` (없을 때만)
+- `npx cap sync android`
+- `.\gradlew.bat assembleDebug`
+
+또한 중간 단계 실패 시 즉시 종료하여 다음 단계로 잘못 진행하지 않습니다.
 
 ### Windows에서 자주 보이는 오류 빠른 해결
 - `Could not find installation of TypeScript`  
-  → 이 프로젝트는 이제 `capacitor.config.json`을 사용하므로 TypeScript 없이 동작합니다.  
-  먼저 최신 파일로 다시 `npm install` 후 `npx cap add android`를 실행하세요.
+  → 스크립트가 TypeScript 보정 설치를 자동으로 시도합니다.  
+  네트워크 제한 등으로 실패하면 `npm install -D typescript`를 직접 1회 실행 후 재시도하세요.
 - PowerShell 파서 오류(문자 깨짐/문자열 종료 안 됨)  
   → `scripts/build_android_debug.ps1`를 ASCII 메시지로 정리해 인코딩 이슈를 줄였습니다.  
   기존 압축본을 재사용 중이라면 최신 파일로 덮어쓴 뒤 다시 실행하세요.
