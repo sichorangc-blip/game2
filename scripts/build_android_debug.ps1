@@ -56,18 +56,38 @@ if (-not (Test-Path "android")) {
   exit 1
 }
 
-if (-not (Get-Command java -ErrorAction SilentlyContinue)) {
-  $studioJbr = "C:\\Program Files\\Android\\Android Studio\\jbr"
-  if (Test-Path $studioJbr) {
-    $env:JAVA_HOME = $studioJbr
-    $env:Path = "$env:JAVA_HOME\\bin;$env:Path"
-    Write-Host "JAVA_HOME auto-set from Android Studio: $env:JAVA_HOME"
-  }
-}
+$javaResolved = $false
 
 if (-not (Get-Command java -ErrorAction SilentlyContinue)) {
+  $javaHomes = @(
+    $env:JAVA_HOME,
+    [Environment]::GetEnvironmentVariable("JAVA_HOME", "User"),
+    [Environment]::GetEnvironmentVariable("JAVA_HOME", "Machine"),
+    "C:\\Program Files\\Android\\Android Studio\\jbr"
+  ) | Where-Object { $_ -and $_.Trim() -ne "" } | Select-Object -Unique
+
+  foreach ($home in $javaHomes) {
+    $javaExe = Join-Path $home "bin\\java.exe"
+    if (Test-Path $javaExe) {
+      $env:JAVA_HOME = $home
+      if (-not $env:Path.StartsWith("$home\\bin")) {
+        $env:Path = "$home\\bin;$env:Path"
+      }
+      Write-Host "JAVA_HOME detected/set: $env:JAVA_HOME"
+      $javaResolved = $true
+      break
+    }
+  }
+}
+else {
+  $javaResolved = $true
+}
+
+if (-not $javaResolved -and -not (Get-Command java -ErrorAction SilentlyContinue)) {
   Write-Host "Java (JDK 17+) not found. Install Android Studio (with JDK) or set JAVA_HOME first." -ForegroundColor Red
-  Write-Host "Example: setx JAVA_HOME \"C:\\Program Files\\Android\\Android Studio\\jbr\\\"" -ForegroundColor Yellow
+  Write-Host "Current JAVA_HOME: $env:JAVA_HOME" -ForegroundColor Yellow
+  Write-Host "Example (current shell): `$env:JAVA_HOME='C:\\Program Files\\Android\\Android Studio\\jbr'; `$env:Path=`\"$env:JAVA_HOME\\bin;`$env:Path`\"" -ForegroundColor Yellow
+  Write-Host "Example (persist): setx JAVA_HOME \"C:\\Program Files\\Android\\Android Studio\\jbr\"" -ForegroundColor Yellow
   exit 1
 }
 

@@ -78,7 +78,12 @@ npm run apk:build:win
   기존 압축본을 재사용 중이라면 최신 파일로 덮어쓴 뒤 다시 실행하세요.
 - `JAVA_HOME is not set and no 'java' command could be found`  
   → 스크립트가 Android Studio 기본 JBR 경로를 먼저 자동 탐지합니다.  
-  그래도 실패하면 JDK 17+ 설치 후 아래를 실행하세요.
+  그래도 실패하면 현재 쉘에 먼저 반영한 뒤 재시도하세요.
+  ```powershell
+  $env:JAVA_HOME="C:\Program Files\Android\Android Studio\jbr"
+  $env:Path="$env:JAVA_HOME\bin;$env:Path"
+  ```
+  이후 영구 저장:
   ```powershell
   setx JAVA_HOME "C:\Program Files\Android\Android Studio\jbr"
   ```
