@@ -8,6 +8,8 @@
 - 입모양 애니메이션 추가 (ㄹ/ㄴ/ㅅ/ㅍ/이중받침 모드)
 - 이미지/스티커 스타일 카드(공룡/곰인형/무지개/로켓) 추가
 - 더 화사한 키즈 컬러 테마 적용
+- 문제 수 확장: **총 32문제**(파트당 8문제)
+- 혼동쌍(최소대립쌍) 게임 추가: ㄹ↔ㄴ, ㅅ↔ㅍ, ㅈ↔ㅊ, ㄱ↔ㅋ, ㄷ↔ㅌ, ㅂ↔ㅍ
 
 ## 1) 로컬에서 실행
 
@@ -69,3 +71,13 @@ cd android
 1. Chrome/Edge 최신 버전 사용
 2. 사이트 마이크 권한 허용
 3. 인식 실패 시 `내 목소리 듣기`로 셀프 비교 연습
+
+## 커리큘럼 설계 참고(조사 반영)
+- 팬데믹 시기 아동 집단의 언어/의사소통 발달 지연 및 변동성 보고를 참고해 **짧고 반복적인 단계형 구조**로 문제를 확대했습니다.
+- 상대적으로 늦게 안정되는 소리(마찰음/유음 계열) 관찰을 반영해 **ㅅ·ㄹ 중심 훈련 비중**을 늘렸습니다.
+- 단일 반복보다 변별 연습이 가능한 **최소대립쌍 게임**을 별도 파트로 구성했습니다.
+
+참고 링크:
+- ASHA Speech Sound Development Milestones: https://www.asha.org/public/speech/development/speech-sound-development-chart/
+- JAMA Network Open (pandemic cohort language/communication 영향 보고): https://jamanetwork.com/journals/jamanetworkopen/fullarticle/2814200
+- Communication Sciences & Disorders(국내 /ㅅ/ 계열 발달 연구): https://e-csd.org/upload/4_3.pdf
