@@ -91,6 +91,10 @@ npm run apk:build:win
   ```powershell
   Get-ChildItem "C:\Program Files","$env:LOCALAPPDATA\Programs" -Filter java.exe -Recurse -ErrorAction SilentlyContinue | Select-Object -First 5 FullName
   ```
+  위 명령 결과가 비어 있으면(아무것도 안 나오면) JDK 자체가 없는 상태입니다. 아래 자동 설치 스크립트를 사용하세요:
+  ```powershell
+  npm run jdk:install:win
+  ```
   JDK가 없으면 설치:
   ```powershell
   winget install -e --id EclipseAdoptium.Temurin.17.JDK

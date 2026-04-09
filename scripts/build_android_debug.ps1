@@ -101,6 +101,7 @@ if (-not $javaResolved -and -not (Get-Command java -ErrorAction SilentlyContinue
   Write-Host "Checked common paths under Android Studio / Adoptium / Microsoft / Java folders." -ForegroundColor Yellow
   Write-Host "Example (current shell): `$env:JAVA_HOME='C:\\Program Files\\Android\\Android Studio\\jbr'; `$env:Path=`\"$env:JAVA_HOME\\bin;`$env:Path`\"" -ForegroundColor Yellow
   Write-Host "Example (persist): setx JAVA_HOME \"C:\\Program Files\\Android\\Android Studio\\jbr\"" -ForegroundColor Yellow
+  Write-Host "Auto install helper: npm run jdk:install:win" -ForegroundColor Yellow
   Write-Host "If needed, install JDK 17 with: winget install -e --id EclipseAdoptium.Temurin.17.JDK" -ForegroundColor Yellow
   exit 1
 }
