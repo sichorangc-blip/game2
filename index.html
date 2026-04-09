@@ -3,15 +3,15 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>또박키즈 - 한국어 발음 게임</title>
+    <title>아이셋 또박키즈 - 한국어 발음 게임</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <header class="hero">
+    <header class="hero rainbow">
       <div>
-        <p class="badge">Friendly Pronunciation Coach</p>
-        <h1>또박키즈</h1>
-        <p class="subtitle">단계별 발음 게임으로 ㄹ/ㄴ/ㅅ/ㅍ부터 이중받침까지 차근차근!</p>
+        <p class="badge">Kids Pronunciation Adventure</p>
+        <h1>아이셋 또박키즈</h1>
+        <p class="subtitle">입모양 애니메이션을 보며 ㄹ/ㄴ/ㅅ/ㅍ부터 이중받침까지 게임처럼!</p>
       </div>
       <div class="chips">
         <p>⭐ 점수 <strong id="xpText">0</strong></p>
@@ -19,6 +19,25 @@
         <button id="dailyMissionBtn" class="primary">오늘의 미션</button>
       </div>
     </header>
+
+    <section class="sticker-row">
+      <article class="sticker card-mini">
+        <div class="emoji">🦖</div>
+        <p>공룡 코치와 함께</p>
+      </article>
+      <article class="sticker card-mini">
+        <div class="emoji">🧸</div>
+        <p>또박또박 챌린지</p>
+      </article>
+      <article class="sticker card-mini">
+        <div class="emoji">🌈</div>
+        <p>무지개 별 보상</p>
+      </article>
+      <article class="sticker card-mini">
+        <div class="emoji">🚀</div>
+        <p>발음 레벨 업</p>
+      </article>
+    </section>
 
     <main class="layout">
       <section class="card">
@@ -60,7 +79,19 @@
       </section>
 
       <section class="card">
-        <h2>3) 발음 방법 가이드</h2>
+        <h2>3) 입모양 애니메이션 가이드</h2>
+        <div class="mouth-stage" id="mouthStage" data-shape="default">
+          <div class="face">
+            <div class="eyes"></div>
+            <div class="mouth-shell">
+              <div class="lips upper"></div>
+              <div class="lips lower"></div>
+              <div class="teeth"></div>
+              <div class="tongue"></div>
+              <div class="air"></div>
+            </div>
+          </div>
+        </div>
         <div id="mouthGuide" class="guide-box">발음을 고르면 입모양/혀 위치 설명이 나와요.</div>
         <ol id="howToList" class="howto"></ol>
       </section>

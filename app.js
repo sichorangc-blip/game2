@@ -3,38 +3,18 @@ const curriculum = [
     id: 'basic',
     title: '기초 자음',
     lessons: [
-      {
-        id: 1,
-        sentence: '라라라, 노래를 불러요.',
-        focus: 'ㄹ',
-        tip: '혀끝을 윗잇몸에 살짝 닿았다가 빠르게 떼요.',
-      },
-      {
-        id: 2,
-        sentence: '나나나, 나는 나비를 봐요.',
-        focus: 'ㄴ',
-        tip: '혀끝을 윗잇몸에 붙이고 코로 울림을 느껴요.',
-      },
-      {
-        id: 3,
-        sentence: '사사사, 사자를 따라 해요.',
-        focus: 'ㅅ',
-        tip: '이 사이로 바람을 가늘게 보내요.',
-      },
-      {
-        id: 4,
-        sentence: '파파파, 파도를 봐요.',
-        focus: 'ㅍ',
-        tip: '입술을 붙였다가 강하게 터뜨려요.',
-      },
+      { id: 1, sentence: '라라라, 노래를 불러요.', focus: 'ㄹ', tip: '혀끝을 윗잇몸에 살짝 닿았다가 빠르게 떼요.' },
+      { id: 2, sentence: '나나나, 나는 나비를 봐요.', focus: 'ㄴ', tip: '혀끝을 윗잇몸에 붙이고 코로 울림을 느껴요.' },
+      { id: 3, sentence: '사사사, 사자를 따라 해요.', focus: 'ㅅ', tip: '이 사이로 바람을 가늘게 보내요.' },
+      { id: 4, sentence: '파파파, 파도를 봐요.', focus: 'ㅍ', tip: '입술을 붙였다가 강하게 터뜨려요.' },
     ],
   },
   {
     id: 'words',
     title: '단어 연결',
     lessons: [
-      { id: 5, sentence: '오늘은 날씨가 맑아요.', focus: 'ㄹ/ㅆ/ㄱ', tip: '단어를 끊어서 또박또박.' },
-      { id: 6, sentence: '학교에서 친구와 놀았어요.', focus: 'ㄱ/ㅊ/ㄹ', tip: '빨리 말하지 않고 박자 맞추기.' },
+      { id: 5, sentence: '오늘은 날씨가 맑아요.', focus: 'ㄹ', tip: '단어를 끊어서 또박또박.' },
+      { id: 6, sentence: '학교에서 친구와 놀았어요.', focus: 'ㄴ', tip: '빨리 말하지 않고 박자 맞추기.' },
     ],
   },
   {
@@ -98,6 +78,7 @@ const speedRange = document.querySelector('#speedRange');
 const speedText = document.querySelector('#speedText');
 const mouthGuide = document.querySelector('#mouthGuide');
 const howToList = document.querySelector('#howToList');
+const mouthStage = document.querySelector('#mouthStage');
 const xpText = document.querySelector('#xpText');
 const streakText = document.querySelector('#streakText');
 
@@ -145,7 +126,7 @@ dailyMissionBtn.addEventListener('click', () => {
   renderLessons();
   selectLesson(lesson.id);
   feedbackBox.className = 'feedback';
-  feedbackBox.textContent = '오늘의 미션: 70점 이상 2번 연속 달성!';
+  feedbackBox.textContent = '오늘의 미션: 70점 이상 2번 연속 달성하면 무지개 뱃지 획득! 🌈';
 });
 
 listenBtn.addEventListener('click', () => {
@@ -182,7 +163,6 @@ function renderStages() {
 function renderLessons() {
   lessonList.innerHTML = '';
   const stage = curriculum.find((item) => item.id === currentStageId);
-
   stage.lessons.forEach((lesson) => {
     const btn = lessonTemplate.content.firstElementChild.cloneNode(true);
     btn.textContent = `[${lesson.focus}] ${lesson.sentence}`;
@@ -209,6 +189,7 @@ function selectLesson(lessonId) {
 function renderGuide(focus) {
   const guide = articulationGuide[focus] || articulationGuide.default;
   mouthGuide.textContent = guide.mouth;
+  mouthStage.dataset.shape = articulationGuide[focus] ? focus : 'default';
   howToList.innerHTML = '';
   guide.steps.forEach((step) => {
     const li = document.createElement('li');
@@ -260,8 +241,7 @@ async function startRecording() {
 
       if (!recognition || recognizedText.textContent === '-') {
         feedbackBox.className = 'feedback';
-        feedbackBox.textContent =
-          '음성 인식이 안 돼도 괜찮아요. "내 목소리 듣기"로 코치 목소리와 비교해 보세요.';
+        feedbackBox.textContent = '음성 인식이 안 돼도 괜찮아요. "내 목소리 듣기"로 코치 목소리와 비교해 보세요.';
       }
     };
 
@@ -369,33 +349,22 @@ function appendHistory(sentence, transcript, score) {
   const stamp = new Date().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
   item.textContent = `${stamp} | ${sentence} | 인식: ${transcript} | 점수: ${score}`;
   historyList.prepend(item);
-
-  while (historyList.children.length > 8) {
-    historyList.removeChild(historyList.lastElementChild);
-  }
+  while (historyList.children.length > 8) historyList.removeChild(historyList.lastElementChild);
 }
 
 function levenshtein(a, b) {
   const dp = Array.from({ length: a.length + 1 }, () => new Array(b.length + 1).fill(0));
   for (let i = 0; i <= a.length; i += 1) dp[i][0] = i;
   for (let j = 0; j <= b.length; j += 1) dp[0][j] = j;
-
   for (let i = 1; i <= a.length; i += 1) {
     for (let j = 1; j <= b.length; j += 1) {
       const cost = a[i - 1] === b[j - 1] ? 0 : 1;
       dp[i][j] = Math.min(dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + cost);
     }
   }
-
   return dp[a.length][b.length];
 }
 
 renderStages();
 renderLessons();
 renderGuide('default');
-
-if (window.speechSynthesis) {
-  speechSynthesis.onvoiceschanged = () => {
-    // ensure voices are loaded for friendly selection
-  };
-}
