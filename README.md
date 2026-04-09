@@ -19,6 +19,13 @@ npm run serve
 
 브라우저에서 `http://localhost:8080` 접속.
 
+### PowerShell에서 아래 로그가 나오면 정상입니다
+`Available on: http://127.0.0.1:8080`가 보이면 서버 실행 성공입니다.
+
+- 서버 종료: `Ctrl + C`
+- 다음 명령(예: APK 빌드)은 **서버를 종료한 뒤** 같은 PowerShell 창에서 실행하세요.
+- PowerShell에 ` ```bash ` 같은 마크다운 표시는 입력하지 마세요(명령어가 아닙니다).
+
 ## 2) Android APK 만들기 (Windows 기준)
 
 ```powershell
@@ -27,6 +34,11 @@ npx cap add android
 npx cap sync android
 cd android
 .\gradlew.bat assembleDebug
+```
+
+또는 아래 한 줄로 자동 진행:
+```powershell
+npm run apk:build:win
 ```
 
 생성 위치:

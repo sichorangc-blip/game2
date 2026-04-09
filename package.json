@@ -6,11 +6,13 @@
   "scripts": {
     "serve": "npx http-server . -p 8080 -c-1",
     "serve:py": "python -m http.server 8080",
+    "android:setup:win": "powershell -ExecutionPolicy Bypass -File .\\scripts\\setup_android.ps1",
     "android:init": "npx cap add android && npx cap sync android",
     "cap:sync": "npx cap sync android",
     "cap:open": "npx cap open android",
     "apk:debug": "cd android && ./gradlew assembleDebug",
     "apk:debug:win": "cd android && gradlew.bat assembleDebug",
+    "apk:build:win": "powershell -ExecutionPolicy Bypass -File .\\scripts\\build_android_debug.ps1",
     "aab:release": "cd android && ./gradlew bundleRelease",
     "aab:release:win": "cd android && gradlew.bat bundleRelease"
   },
