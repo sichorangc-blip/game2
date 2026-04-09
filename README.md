@@ -17,7 +17,8 @@ npm install
 npm run serve
 ```
 
-브라우저에서 `http://localhost:8080` 접속.
+기본적으로 8080을 먼저 시도하고, 사용 중이면 8081/8082/3000/5173 순서로 자동 선택합니다.
+터미널에 출력된 `Available on:` 주소로 접속하세요.
 
 ### PowerShell에서 아래 로그가 나오면 정상입니다
 `Available on: http://127.0.0.1:8080`가 보이면 서버 실행 성공입니다.
@@ -25,6 +26,16 @@ npm run serve
 - 서버 종료: `Ctrl + C`
 - 다음 명령(예: APK 빌드)은 **서버를 종료한 뒤** 같은 PowerShell 창에서 실행하세요.
 - PowerShell에 ` ```bash ` 같은 마크다운 표시는 입력하지 마세요(명령어가 아닙니다).
+
+### `EADDRINUSE: address already in use 0.0.0.0:8080` 오류가 나올 때
+- 이미 다른 프로세스가 8080 포트를 사용 중이라는 뜻입니다.
+- 지금은 `npm run serve`가 자동으로 다른 포트를 찾아 실행하도록 되어 있습니다.
+- 꼭 8080을 써야 한다면 아래로 기존 프로세스를 종료하세요.
+
+```powershell
+netstat -ano | findstr :8080
+taskkill /PID <PID번호> /F
+```
 
 ## 2) Android APK 만들기 (Windows 기준)
 

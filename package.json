@@ -4,7 +4,8 @@
   "private": true,
   "description": "Kid-friendly Korean pronunciation trainer web app with Android APK packaging via Capacitor",
   "scripts": {
-    "serve": "npx http-server . -p 8080 -c-1",
+    "serve": "node ./scripts/serve.js",
+    "serve:8080": "npx http-server . -p 8080 -c-1",
     "serve:py": "python -m http.server 8080",
     "android:setup:win": "powershell -ExecutionPolicy Bypass -File .\\scripts\\setup_android.ps1",
     "android:init": "npx cap add android && npx cap sync android",
