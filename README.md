@@ -72,6 +72,7 @@ npm run apk:build:win
 - `\".\" is not a valid value for webDir`  
   → 현재 설정은 `webDir: \"www\"`이며, `npm run cap:prepare`가 `www`를 생성합니다.  
   수동 실행 시 `npm run cap:prepare`를 먼저 실행한 뒤 `npx cap add android`를 실행하세요.
+  그래도 동일 오류면 이전 압축본의 `capacitor.config.ts`가 남아있을 수 있으니 파일을 삭제(또는 `.bak` 변경) 후 다시 시도하세요.
 - PowerShell 파서 오류(문자 깨짐/문자열 종료 안 됨)  
   → `scripts/build_android_debug.ps1`를 ASCII 메시지로 정리해 인코딩 이슈를 줄였습니다.  
   기존 압축본을 재사용 중이라면 최신 파일로 덮어쓴 뒤 다시 실행하세요.

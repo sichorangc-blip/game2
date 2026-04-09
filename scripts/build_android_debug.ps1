@@ -26,6 +26,11 @@ if (-not (Test-Path "package.json")) {
   exit 1
 }
 
+if (Test-Path "capacitor.config.ts") {
+  Write-Host "Found legacy capacitor.config.ts. Renaming to avoid config conflicts..."
+  Rename-Item "capacitor.config.ts" "capacitor.config.ts.bak" -Force
+}
+
 Write-Host "1) Install dependencies"
 Invoke-Step "npm install" "npm install failed."
 

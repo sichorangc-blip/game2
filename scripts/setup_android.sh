@@ -6,6 +6,11 @@ if ! command -v npm >/dev/null 2>&1; then
   exit 1
 fi
 
+if [ -f "capacitor.config.ts" ]; then
+  echo "legacy capacitor.config.ts 발견: 설정 충돌 방지를 위해 .bak으로 변경"
+  mv -f capacitor.config.ts capacitor.config.ts.bak
+fi
+
 echo "1) 의존성 설치"
 npm install
 
