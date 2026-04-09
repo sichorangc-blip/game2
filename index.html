@@ -3,56 +3,77 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>또박키즈 - 한국어 발음 연습</title>
+    <title>또박키즈 - 한국어 발음 게임</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <header class="hero">
       <div>
-        <p class="badge">Kid Korean Pronunciation Trainer</p>
+        <p class="badge">Friendly Pronunciation Coach</p>
         <h1>또박키즈</h1>
-        <p class="subtitle">
-          어린 아이도 재미있게! 듣고, 따라 말하고, 별점을 받는 한국어 발음 연습 앱
-        </p>
+        <p class="subtitle">단계별 발음 게임으로 ㄹ/ㄴ/ㅅ/ㅍ부터 이중받침까지 차근차근!</p>
       </div>
-      <button id="dailyMissionBtn" class="primary">오늘의 미션 시작</button>
+      <div class="chips">
+        <p>⭐ 점수 <strong id="xpText">0</strong></p>
+        <p>🔥 연속 성공 <strong id="streakText">0</strong></p>
+        <button id="dailyMissionBtn" class="primary">오늘의 미션</button>
+      </div>
     </header>
 
     <main class="layout">
       <section class="card">
-        <h2>1) 오늘 연습 문장 선택</h2>
+        <h2>1) 단계 선택</h2>
+        <p class="muted">쉬운 자음 → 문장 → 어려운 이중받침 순서로 진행해요.</p>
+        <div id="stageTabs" class="stage-tabs"></div>
         <div id="lessonList" class="lesson-list"></div>
       </section>
 
       <section class="card practice-card">
         <h2>2) 듣고 따라 말하기</h2>
-        <p id="targetSentence" class="target">연습 문장을 고르면 여기에 표시돼요.</p>
+        <p id="targetSentence" class="target">단계를 선택하면 문장이 나와요.</p>
+
+        <div class="coach-controls">
+          <label for="speedRange">코치 속도</label>
+          <input id="speedRange" type="range" min="0.65" max="1" step="0.05" value="0.85" />
+          <span id="speedText">0.85x</span>
+        </div>
 
         <div class="controls">
-          <button id="listenBtn" class="secondary" disabled>문장 듣기 🔊</button>
+          <button id="listenBtn" class="secondary" disabled>다정한 코치 목소리 듣기 🔊</button>
           <button id="recordBtn" class="primary" disabled>녹음 시작 🎤</button>
+          <button id="playbackBtn" class="ghost" disabled>내 목소리 듣기 ▶</button>
         </div>
 
         <div class="status-grid">
           <p><strong>상태:</strong> <span id="statusText">대기 중</span></p>
           <p><strong>남은 시간:</strong> <span id="timerText">0초</span></p>
-          <p><strong>인식된 문장:</strong> <span id="recognizedText">-</span></p>
+          <p><strong>인식 문장:</strong> <span id="recognizedText">-</span></p>
         </div>
 
         <div class="meter-wrap">
-          <label for="scoreMeter">발음 점수</label>
+          <label for="scoreMeter">이번 점수</label>
           <progress id="scoreMeter" max="100" value="0"></progress>
           <p id="scoreText">0점</p>
         </div>
 
-        <div id="feedbackBox" class="feedback">문장을 고른 뒤 연습을 시작해 주세요.</div>
+        <div id="feedbackBox" class="feedback">단계를 고르고 연습을 시작해 주세요.</div>
       </section>
 
       <section class="card">
-        <h2>3) 학부모 리포트</h2>
+        <h2>3) 발음 방법 가이드</h2>
+        <div id="mouthGuide" class="guide-box">발음을 고르면 입모양/혀 위치 설명이 나와요.</div>
+        <ol id="howToList" class="howto"></ol>
+      </section>
+
+      <section class="card">
+        <h2>4) 학부모 리포트</h2>
         <ul id="historyList" class="history"></ul>
       </section>
     </main>
+
+    <template id="stageTemplate">
+      <button class="stage-btn" type="button"></button>
+    </template>
 
     <template id="lessonTemplate">
       <button class="lesson-btn" type="button"></button>

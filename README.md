@@ -3,11 +3,7 @@
 어린 아이들이 한국어 발음을 재미있게 연습할 수 있도록 만든 웹앱입니다.
 이 프로젝트는 **웹 실행**과 **Android APK/AAB 패키징(구글 플레이스토어 등록용)** 모두를 지원합니다.
 
-## 1) 로컬에서 바로 실행 (웹)
-
-### 가장 쉬운 방법 (Windows / macOS / Linux 공통)
-
-> ⚠️ 반드시 `package.json`이 있는 **프로젝트 폴더에서** 실행해야 합니다.
+## 1) 로컬에서 실행
 
 ```bash
 cd <프로젝트_폴더>
@@ -15,9 +11,9 @@ npm install
 npm run serve
 ```
 
-브라우저에서 `http://localhost:8080` 접속 후 사용하세요.
+브라우저에서 `http://localhost:8080` 접속.
 
-### Windows PowerShell 예시 (실제 경로)
+### Windows PowerShell 예시
 
 ```powershell
 cd "C:\Users\유정곤\Downloads\game2-codex-l2oamo\game2-codex-l2oamo"
@@ -25,104 +21,57 @@ npm install
 npm run serve
 ```
 
-### Windows PowerShell에서 Python으로 실행하고 싶다면
+## 2) 녹음이 안 될 때 체크
+
+1. 브라우저는 **Chrome/Edge 최신 버전 권장**
+2. 주소창 자물쇠/사이트 권한에서 마이크 허용
+3. 다른 앱(줌/디스코드)이 마이크 독점 중인지 확인
+4. 그래도 인식이 안 되면 `내 목소리 듣기` 버튼으로 셀프 비교 연습 가능
+
+## 3) Android APK 만들기 (Windows 기준)
+
+> 기존 실패 원인: PowerShell에서 `bash`, `./scripts/setup_android.sh`, `./gradlew`는 WSL/리눅스 쉘이 없으면 동작하지 않습니다.
+
+### 3-1. Android 프로젝트 생성
 
 ```powershell
-cd "C:\Users\유정곤\Downloads\game2-codex-l2oamo\game2-codex-l2oamo"
-python -m http.server 8080
-```
-
-> `python3`는 PowerShell 기본 환경에서 없을 수 있습니다.
-> `bash python3 ...` 형태는 WSL이 필요하므로, WSL이 없다면 위 `python` 또는 `npm run serve`를 사용하세요.
-
-### 자주 발생하는 오류 해결
-
-#### `npm ERR! enoent Could not read package.json`
-현재 위치가 프로젝트 루트가 아닐 때 발생합니다.
-
-```powershell
-pwd
-cd "C:\Users\유정곤\Downloads\game2-codex-l2oamo\game2-codex-l2oamo"
-dir package.json
-npm install
-```
-
-- `dir package.json` 결과가 보여야 정상입니다.
-- `C:\Users\유정곤` 같은 상위 경로에서 `npm install` 하면 같은 오류가 납니다.
-
----
-
-## 2) 모바일 앱(Android)으로 만들기
-
-이 프로젝트는 Capacitor를 사용해 웹 코드를 Android 앱으로 패키징합니다.
-
-### 준비물
-- Node.js LTS
-- Android Studio (SDK/Build-Tools 포함)
-- Java 17
-
-### 최초 1회 설정
-
-```bash
 npm install
 npx cap add android
 npx cap sync android
 ```
 
-또는 아래 스크립트 한 번으로 진행할 수 있습니다.
+또는 PowerShell 스크립트 사용:
 
-```bash
-./scripts/setup_android.sh
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\setup_android.ps1
 ```
 
-### Android Studio 열기
+성공 후 `android` 폴더가 생겨야 합니다.
 
-```bash
-npx cap open android
-```
+### 3-2. APK 빌드
 
----
-
-## 3) APK 파일 만들기 (테스트 배포용)
-
-```bash
+```powershell
 cd android
-./gradlew assembleDebug
+.\gradlew.bat assembleDebug
 ```
 
 생성 위치:
-- `android/app/build/outputs/apk/debug/app-debug.apk`
+- `android\app\build\outputs\apk\debug\app-debug.apk`
 
-> 실사용 배포/스토어 업로드에는 보통 debug APK 대신 **release 서명 APK 또는 AAB**를 사용합니다.
+## 4) 구글 플레이스토어 등록용 AAB (권장)
 
----
-
-## 4) 구글 플레이스토어 등록용 파일 만들기 (권장: AAB)
-
-```bash
+```powershell
 cd android
-./gradlew bundleRelease
+.\gradlew.bat bundleRelease
 ```
 
 생성 위치:
-- `android/app/build/outputs/bundle/release/app-release.aab`
+- `android\app\build\outputs\bundle\release\app-release.aab`
 
-### 등록 시 체크 포인트
-1. 앱 서명 키스토어 생성/설정
-2. `versionCode`, `versionName` 관리
-3. 앱 아이콘/스플래시/스크린샷 준비
-4. 개인정보처리방침 URL 준비 (마이크 권한 사용)
-5. Play Console에서 내부 테스트 트랙 업로드 후 검증
+## 5) 이번 개선 사항
 
----
-
-## 기능 요약
-- 오늘의 미션 문장 랜덤 선택
-- 문장 듣기(TTS)
-- 마이크 녹음 + 브라우저 음성 인식(ko-KR)
-- 목표 문장과 인식 문장 유사도 기반 점수화
-- 학부모용 연습 히스토리 표시
-
-## 참고
-- 음성 인식 정확도는 브라우저 엔진/기기 마이크 품질에 따라 달라집니다.
-- 점수는 Levenshtein 거리 기반의 간단한 예시 모델입니다.
+- 단계별 커리큘럼(기초 자음 → 단어 연결 → 이중받침)
+- 게임 요소(점수/연속 성공)
+- 발음 방법 가이드(입모양/혀 위치/단계별 설명)
+- 다정한 코치 톤을 위한 음성 선택 + 속도 조절
+- 음성 인식 실패 시에도 녹음 재생으로 연습 가능
