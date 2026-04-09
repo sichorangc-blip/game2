@@ -8,9 +8,9 @@
 - 입모양 애니메이션 추가 (ㄹ/ㄴ/ㅅ/ㅍ/이중받침 모드)
 - 이미지/스티커 스타일 카드(공룡/곰인형/무지개/로켓) 추가
 - 더 화사한 키즈 컬러 테마 적용
-- 문제 수 확장: **총 60문제**(6파트 × 10문제)
+- 문제 수 확장: **총 240문제**(10 Grades × 24문제)
 - 혼동쌍(최소대립쌍) 게임 추가: ㄹ↔ㄴ, ㅅ↔ㅍ, ㅈ↔ㅊ, ㄱ↔ㅋ, ㄷ↔ㅌ, ㅂ↔ㅍ
-- 리듬·호흡 챌린지 + 짧은 이야기 모험 파트 추가
+- Grade 잠금해제 구조: 80점 이상이면 다음 문제 해금, Grade 완료 시 다음 Grade 해금 + 스티커 보상
 
 ## 1) 로컬에서 실행
 
@@ -76,6 +76,12 @@ npm run apk:build:win
 - PowerShell 파서 오류(문자 깨짐/문자열 종료 안 됨)  
   → `scripts/build_android_debug.ps1`를 ASCII 메시지로 정리해 인코딩 이슈를 줄였습니다.  
   기존 압축본을 재사용 중이라면 최신 파일로 덮어쓴 뒤 다시 실행하세요.
+- `JAVA_HOME is not set and no 'java' command could be found`  
+  → 스크립트가 Android Studio 기본 JBR 경로를 먼저 자동 탐지합니다.  
+  그래도 실패하면 JDK 17+ 설치 후 아래를 실행하세요.
+  ```powershell
+  setx JAVA_HOME "C:\Program Files\Android\Android Studio\jbr"
+  ```
 
 생성 위치:
 - `android\app\build\outputs\apk\debug\app-debug.apk`

@@ -56,6 +56,21 @@ if (-not (Test-Path "android")) {
   exit 1
 }
 
+if (-not (Get-Command java -ErrorAction SilentlyContinue)) {
+  $studioJbr = "C:\\Program Files\\Android\\Android Studio\\jbr"
+  if (Test-Path $studioJbr) {
+    $env:JAVA_HOME = $studioJbr
+    $env:Path = "$env:JAVA_HOME\\bin;$env:Path"
+    Write-Host "JAVA_HOME auto-set from Android Studio: $env:JAVA_HOME"
+  }
+}
+
+if (-not (Get-Command java -ErrorAction SilentlyContinue)) {
+  Write-Host "Java (JDK 17+) not found. Install Android Studio (with JDK) or set JAVA_HOME first." -ForegroundColor Red
+  Write-Host "Example: setx JAVA_HOME \"C:\\Program Files\\Android\\Android Studio\\jbr\\\"" -ForegroundColor Yellow
+  exit 1
+}
+
 Write-Host "4) Build Debug APK"
 Push-Location android
 Invoke-Step ".\gradlew.bat assembleDebug" "Gradle debug build failed."
