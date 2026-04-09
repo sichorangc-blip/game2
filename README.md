@@ -91,10 +91,12 @@ npm run apk:build:win
   ```powershell
   Get-ChildItem "C:\Program Files","$env:LOCALAPPDATA\Programs" -Filter java.exe -Recurse -ErrorAction SilentlyContinue | Select-Object -First 5 FullName
   ```
-  위 명령 결과가 비어 있으면(아무것도 안 나오면) JDK 자체가 없는 상태입니다. 아래 자동 설치 스크립트를 사용하세요:
+  위 명령 결과가 비어 있으면(아무것도 안 나오면) JDK 자체가 없는 상태입니다. `npm run apk:build:win`은 winget이 있으면 JDK 자동 설치를 시도합니다.
+  별도 설치만 먼저 하고 싶다면 아래 자동 설치 스크립트를 사용하세요:
   ```powershell
   npm run jdk:install:win
   ```
+  `Missing script: jdk:install:win`가 나오면 오래된 압축본입니다. 최신 코드로 갱신하거나 바로 아래 `winget` 명령을 사용하세요.
   JDK가 없으면 설치:
   ```powershell
   winget install -e --id EclipseAdoptium.Temurin.17.JDK

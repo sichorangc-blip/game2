@@ -96,6 +96,37 @@ else {
 }
 
 if (-not $javaResolved -and -not (Get-Command java -ErrorAction SilentlyContinue)) {
+  if (Get-Command winget -ErrorAction SilentlyContinue) {
+    Write-Host "Java not found. Trying automatic JDK install (Temurin 17) via winget..."
+    winget install -e --id EclipseAdoptium.Temurin.17.JDK --accept-source-agreements --accept-package-agreements
+
+    $retryHomes = @(
+      [Environment]::GetEnvironmentVariable("JAVA_HOME", "User"),
+      [Environment]::GetEnvironmentVariable("JAVA_HOME", "Machine"),
+      "C:\\Program Files\\Eclipse Adoptium\\jdk-17",
+      "C:\\Program Files\\Eclipse Adoptium"
+    ) | Where-Object { $_ -and $_.Trim() -ne "" } | Select-Object -Unique
+
+    foreach ($home in $retryHomes) {
+      if (Test-Path $home) {
+        if ((Get-Item $home).PSIsContainer) {
+          $javaExe = Get-ChildItem $home -Filter java.exe -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1
+          if ($javaExe) {
+            $resolvedHome = Split-Path (Split-Path $javaExe.FullName -Parent) -Parent
+            $env:JAVA_HOME = $resolvedHome
+            $env:Path = "$resolvedHome\\bin;$env:Path"
+            setx JAVA_HOME "$resolvedHome" | Out-Null
+            $javaResolved = $true
+            Write-Host "JDK installed and JAVA_HOME set: $resolvedHome"
+            break
+          }
+        }
+      }
+    }
+  }
+}
+
+if (-not $javaResolved -and -not (Get-Command java -ErrorAction SilentlyContinue)) {
   Write-Host "Java (JDK 17+) not found. Install Android Studio (with JDK) or set JAVA_HOME first." -ForegroundColor Red
   Write-Host "Current JAVA_HOME: $env:JAVA_HOME" -ForegroundColor Yellow
   Write-Host "Checked common paths under Android Studio / Adoptium / Microsoft / Java folders." -ForegroundColor Yellow
