@@ -7,21 +7,48 @@
 
 ### 가장 쉬운 방법 (Windows / macOS / Linux 공통)
 
+> ⚠️ 반드시 `package.json`이 있는 **프로젝트 폴더에서** 실행해야 합니다.
+
 ```bash
+cd <프로젝트_폴더>
 npm install
 npm run serve
 ```
 
 브라우저에서 `http://localhost:8080` 접속 후 사용하세요.
 
+### Windows PowerShell 예시 (실제 경로)
+
+```powershell
+cd "C:\Users\유정곤\Downloads\game2-codex-l2oamo\game2-codex-l2oamo"
+npm install
+npm run serve
+```
+
 ### Windows PowerShell에서 Python으로 실행하고 싶다면
 
 ```powershell
+cd "C:\Users\유정곤\Downloads\game2-codex-l2oamo\game2-codex-l2oamo"
 python -m http.server 8080
 ```
 
 > `python3`는 PowerShell 기본 환경에서 없을 수 있습니다.
 > `bash python3 ...` 형태는 WSL이 필요하므로, WSL이 없다면 위 `python` 또는 `npm run serve`를 사용하세요.
+
+### 자주 발생하는 오류 해결
+
+#### `npm ERR! enoent Could not read package.json`
+현재 위치가 프로젝트 루트가 아닐 때 발생합니다.
+
+```powershell
+pwd
+cd "C:\Users\유정곤\Downloads\game2-codex-l2oamo\game2-codex-l2oamo"
+dir package.json
+npm install
+```
+
+- `dir package.json` 결과가 보여야 정상입니다.
+- `C:\Users\유정곤` 같은 상위 경로에서 `npm install` 하면 같은 오류가 납니다.
 
 ---
 
