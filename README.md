@@ -87,6 +87,14 @@ npm run apk:build:win
   ```powershell
   setx JAVA_HOME "C:\Program Files\Android\Android Studio\jbr"
   ```
+  그래도 `java -version`이 안 되면, 실제 java.exe 경로를 먼저 찾아서 지정하세요:
+  ```powershell
+  Get-ChildItem "C:\Program Files","$env:LOCALAPPDATA\Programs" -Filter java.exe -Recurse -ErrorAction SilentlyContinue | Select-Object -First 5 FullName
+  ```
+  JDK가 없으면 설치:
+  ```powershell
+  winget install -e --id EclipseAdoptium.Temurin.17.JDK
+  ```
 
 생성 위치:
 - `android\app\build\outputs\apk\debug\app-debug.apk`

@@ -63,8 +63,20 @@ if (-not (Get-Command java -ErrorAction SilentlyContinue)) {
     $env:JAVA_HOME,
     [Environment]::GetEnvironmentVariable("JAVA_HOME", "User"),
     [Environment]::GetEnvironmentVariable("JAVA_HOME", "Machine"),
-    "C:\\Program Files\\Android\\Android Studio\\jbr"
+    "C:\\Program Files\\Android\\Android Studio\\jbr",
+    "C:\\Program Files\\Android\\Android Studio\\jre",
+    "$env:LOCALAPPDATA\\Programs\\Android Studio\\jbr",
+    "$env:LOCALAPPDATA\\Programs\\Android Studio\\jre"
   ) | Where-Object { $_ -and $_.Trim() -ne "" } | Select-Object -Unique
+
+  $jdkRoots = @("$env:ProgramFiles\\Eclipse Adoptium", "$env:ProgramFiles\\Microsoft", "$env:ProgramFiles\\Java")
+  foreach ($root in $jdkRoots) {
+    if (Test-Path $root) {
+      Get-ChildItem -Path $root -Directory -ErrorAction SilentlyContinue | ForEach-Object {
+        $javaHomes += $_.FullName
+      }
+    }
+  }
 
   foreach ($home in $javaHomes) {
     $javaExe = Join-Path $home "bin\\java.exe"
@@ -86,8 +98,10 @@ else {
 if (-not $javaResolved -and -not (Get-Command java -ErrorAction SilentlyContinue)) {
   Write-Host "Java (JDK 17+) not found. Install Android Studio (with JDK) or set JAVA_HOME first." -ForegroundColor Red
   Write-Host "Current JAVA_HOME: $env:JAVA_HOME" -ForegroundColor Yellow
+  Write-Host "Checked common paths under Android Studio / Adoptium / Microsoft / Java folders." -ForegroundColor Yellow
   Write-Host "Example (current shell): `$env:JAVA_HOME='C:\\Program Files\\Android\\Android Studio\\jbr'; `$env:Path=`\"$env:JAVA_HOME\\bin;`$env:Path`\"" -ForegroundColor Yellow
   Write-Host "Example (persist): setx JAVA_HOME \"C:\\Program Files\\Android\\Android Studio\\jbr\"" -ForegroundColor Yellow
+  Write-Host "If needed, install JDK 17 with: winget install -e --id EclipseAdoptium.Temurin.17.JDK" -ForegroundColor Yellow
   exit 1
 }
 
