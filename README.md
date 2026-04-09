@@ -55,6 +55,14 @@ cd android
 npm run apk:build:win
 ```
 
+### Windows에서 자주 보이는 오류 빠른 해결
+- `Could not find installation of TypeScript`  
+  → 이 프로젝트는 이제 `capacitor.config.json`을 사용하므로 TypeScript 없이 동작합니다.  
+  먼저 최신 파일로 다시 `npm install` 후 `npx cap add android`를 실행하세요.
+- PowerShell 파서 오류(문자 깨짐/문자열 종료 안 됨)  
+  → `scripts/build_android_debug.ps1`를 ASCII 메시지로 정리해 인코딩 이슈를 줄였습니다.  
+  기존 압축본을 재사용 중이라면 최신 파일로 덮어쓴 뒤 다시 실행하세요.
+
 생성 위치:
 - `android\app\build\outputs\apk\debug\app-debug.apk`
 
