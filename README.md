@@ -117,6 +117,7 @@ npm run apk:build:win
   ```powershell
   npm run sdk:install:win
   ```
+  Android Studio가 설치된 뒤에도 같은 오류가 나면, **Android Studio를 1회 실행해 초기 설정 마법사에서 SDK Platform/Build-Tools 설치를 완료**해야 합니다.
 
 생성 위치:
 - `android\app\build\outputs\apk\debug\app-debug.apk`

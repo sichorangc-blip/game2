@@ -90,7 +90,10 @@ foreach ($dir in $studioOptionDirs) {
   }
 }
 
-$sdkCandidates = $sdkCandidates | Where-Object { $_ -and $_.Trim() -ne "" } | Select-Object -Unique
+$sdkCandidates = $sdkCandidates |
+  Where-Object { $_ -and $_.Trim() -ne "" } |
+  ForEach-Object { $_ -replace "\\\\", "\" } |
+  Select-Object -Unique
 
 $resolvedSdkDir = $null
 foreach ($sdkCandidate in $sdkCandidates) {
@@ -108,6 +111,12 @@ if (-not $resolvedSdkDir) {
   Write-Host "Example (current shell): `$env:ANDROID_HOME='$env:USERPROFILE\\AppData\\Local\\Android\\Sdk'" -ForegroundColor Yellow
   Write-Host "Example (persist): setx ANDROID_HOME \"$env:USERPROFILE\\AppData\\Local\\Android\\Sdk\"" -ForegroundColor Yellow
   Write-Host "Auto install helper: npm run sdk:install:win" -ForegroundColor Yellow
+  $studioExe = "C:\\Program Files\\Android\\Android Studio\\bin\\studio64.exe"
+  if (Test-Path $studioExe) {
+    Write-Host "Android Studio is installed, but SDK folder is missing." -ForegroundColor Yellow
+    Write-Host "Please launch Android Studio once, finish setup wizard, and install SDK Platform + Build-Tools." -ForegroundColor Yellow
+    Write-Host "Launcher: $studioExe" -ForegroundColor Yellow
+  }
   exit 1
 }
 
