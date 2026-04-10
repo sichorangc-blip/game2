@@ -78,12 +78,12 @@ if (-not (Get-Command java -ErrorAction SilentlyContinue)) {
     }
   }
 
-  foreach ($home in $javaHomes) {
-    $javaExe = Join-Path $home "bin\\java.exe"
+  foreach ($javaHomeCandidate in $javaHomes) {
+    $javaExe = Join-Path $javaHomeCandidate "bin\\java.exe"
     if (Test-Path $javaExe) {
-      $env:JAVA_HOME = $home
-      if (-not $env:Path.StartsWith("$home\\bin")) {
-        $env:Path = "$home\\bin;$env:Path"
+      $env:JAVA_HOME = $javaHomeCandidate
+      if (-not $env:Path.StartsWith("$javaHomeCandidate\\bin")) {
+        $env:Path = "$javaHomeCandidate\\bin;$env:Path"
       }
       Write-Host "JAVA_HOME detected/set: $env:JAVA_HOME"
       $javaResolved = $true
@@ -107,10 +107,10 @@ if (-not $javaResolved -and -not (Get-Command java -ErrorAction SilentlyContinue
       "C:\\Program Files\\Eclipse Adoptium"
     ) | Where-Object { $_ -and $_.Trim() -ne "" } | Select-Object -Unique
 
-    foreach ($home in $retryHomes) {
-      if (Test-Path $home) {
-        if ((Get-Item $home).PSIsContainer) {
-          $javaExe = Get-ChildItem $home -Filter java.exe -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1
+    foreach ($retryJavaHome in $retryHomes) {
+      if (Test-Path $retryJavaHome) {
+        if ((Get-Item $retryJavaHome).PSIsContainer) {
+          $javaExe = Get-ChildItem $retryJavaHome -Filter java.exe -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1
           if ($javaExe) {
             $resolvedHome = Split-Path (Split-Path $javaExe.FullName -Parent) -Parent
             $env:JAVA_HOME = $resolvedHome
