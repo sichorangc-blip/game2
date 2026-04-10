@@ -105,8 +105,9 @@ if (-not $resolvedSdkDir) {
   Write-Host "Checked SDK candidates:" -ForegroundColor Yellow
   $sdkCandidates | ForEach-Object { Write-Host " - $_" -ForegroundColor Yellow }
   Write-Host "Install Android Studio SDK or set ANDROID_HOME / ANDROID_SDK_ROOT." -ForegroundColor Yellow
-  Write-Host "Example (current shell): `$env:ANDROID_HOME=`\"$env:USERPROFILE\\AppData\\Local\\Android\\Sdk`\"" -ForegroundColor Yellow
+  Write-Host "Example (current shell): `$env:ANDROID_HOME='$env:USERPROFILE\\AppData\\Local\\Android\\Sdk'" -ForegroundColor Yellow
   Write-Host "Example (persist): setx ANDROID_HOME \"$env:USERPROFILE\\AppData\\Local\\Android\\Sdk\"" -ForegroundColor Yellow
+  Write-Host "Auto install helper: npm run sdk:install:win" -ForegroundColor Yellow
   exit 1
 }
 

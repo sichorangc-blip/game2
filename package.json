@@ -9,6 +9,7 @@
     "serve:py": "python -m http.server 8080",
     "cap:prepare": "node ./scripts/prepare_web_assets.js",
     "jdk:install:win": "powershell -ExecutionPolicy Bypass -File .\\scripts\\install_jdk_windows.ps1",
+    "sdk:install:win": "powershell -ExecutionPolicy Bypass -File .\\scripts\\install_android_sdk_windows.ps1",
     "android:setup:win": "powershell -ExecutionPolicy Bypass -File .\\scripts\\setup_android.ps1",
     "android:init": "npm run cap:prepare && npx cap add android && npx cap sync android",
     "cap:sync": "npm run cap:prepare && npx cap sync android",

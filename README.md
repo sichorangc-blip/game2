@@ -107,10 +107,15 @@ npm run apk:build:win
 - `SDK location not found`  
   → Android SDK 경로를 찾지 못한 경우입니다.  
   `apk:build:win`은 `ANDROID_HOME`, `ANDROID_SDK_ROOT`, `%LOCALAPPDATA%\\Android\\Sdk`를 순서대로 확인해 `android/local.properties`의 `sdk.dir`를 자동 생성합니다.  
+  이 오류가 나오면 **Android SDK가 아직 설치되지 않았거나** 경로가 비어있는 상태입니다.
   자동 탐지 실패 시 아래를 실행하세요:
   ```powershell
   $env:ANDROID_HOME="$env:USERPROFILE\AppData\Local\Android\Sdk"
   setx ANDROID_HOME "$env:USERPROFILE\AppData\Local\Android\Sdk"
+  ```
+  SDK가 없다면 자동 설치 도우미:
+  ```powershell
+  npm run sdk:install:win
   ```
 
 생성 위치:
