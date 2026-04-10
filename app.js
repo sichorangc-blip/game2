@@ -66,6 +66,9 @@ let stickerCount = 0;
 let timer = null;
 let mediaRecorder = null;
 let recordedBlobUrl = null;
+let totalAttempts = 0;
+let totalCorrect = 0;
+const focusStats = {};
 
 const stageTabs = document.querySelector('#stageTabs');
 const lessonList = document.querySelector('#lessonList');
@@ -98,6 +101,7 @@ const profileModal = document.querySelector('#profileModal');
 const profileForm = document.querySelector('#profileForm');
 const childNameInput = document.querySelector('#childNameInput');
 const childAgeInput = document.querySelector('#childAgeInput');
+const capPlugins = window.Capacitor?.Plugins || {};
 
 const recognition = window.SpeechRecognition || window.webkitSpeechRecognition
   ? new (window.SpeechRecognition || window.webkitSpeechRecognition)()
@@ -165,7 +169,20 @@ function renderStats() {
   streakText.textContent = String(streak);
   stickerText.textContent = String(stickerCount);
   analysisList.innerHTML = '';
-  ['총 240문제', '80점 이상 시 다음 문제 해금', 'Grade 완료 시 스티커 +1'].forEach((m) => {
+  const solvedRate = totalAttempts ? Math.round((totalCorrect / totalAttempts) * 100) : 0;
+  const focusEntries = Object.entries(focusStats).map(([focus, stat]) => ({
+    focus,
+    avg: Math.round(stat.scoreSum / Math.max(stat.attempts, 1)),
+    attempts: stat.attempts,
+  }));
+  const weak = focusEntries.sort((a, b) => a.avg - b.avg).slice(0, 3);
+
+  [
+    `총 시도: ${totalAttempts}회 / 정답(80점↑): ${totalCorrect}회`,
+    `전체 성공률: ${solvedRate}%`,
+    `현재 Grade 해금: ${p.unlockedLesson + 1}/${curriculum[currentGradeIndex].lessons.length}`,
+    weak.length ? `보완이 필요한 소리: ${weak.map((w) => `${w.focus}(${w.avg}점)`).join(', ')}` : '보완 영역 데이터가 아직 없어요.',
+  ].forEach((m) => {
     const li = document.createElement('li');
     li.textContent = m;
     analysisList.appendChild(li);
@@ -209,7 +226,22 @@ function playEffect(ok) {
   osc.stop(ctx.currentTime + (ok ? 0.12 : 0.2));
 }
 
-function speakSentence(sentence) {
+async function speakSentence(sentence) {
+  if (capPlugins.TextToSpeech?.speak) {
+    try {
+      await capPlugins.TextToSpeech.speak({
+        text: sentence,
+        lang: 'ko-KR',
+        rate: Number(speedRange.value),
+        pitch: 1.0,
+      });
+      statusText.textContent = '코치 음성 재생';
+      return;
+    } catch {
+      // fallback to web speech
+    }
+  }
+
   if (!window.speechSynthesis) {
     statusText.textContent = 'TTS 미지원 기기';
     return;
@@ -245,7 +277,26 @@ async function startRecording() {
     if (recognition) { try { recognition.start(); } catch {} }
     startTimer(8);
   } catch {
-    statusText.textContent = '마이크 권한 필요';
+    if (capPlugins.SpeechRecognition?.requestPermissions) {
+      try {
+        await capPlugins.SpeechRecognition.requestPermissions();
+        const result = await capPlugins.SpeechRecognition.start({
+          language: 'ko-KR',
+          maxResults: 1,
+          prompt: '문장을 또박또박 읽어주세요',
+          partialResults: false,
+        });
+        const transcript = result.matches?.[0] || '';
+        recognizedText.textContent = transcript || '-';
+        statusText.textContent = '음성 인식 완료';
+        if (transcript) evaluateResult(transcript);
+        return;
+      } catch {
+        statusText.textContent = '마이크 권한 필요';
+      }
+    } else {
+      statusText.textContent = '마이크 권한 필요';
+    }
   }
 }
 
@@ -293,10 +344,17 @@ function evaluateResult(transcript) {
   scoreText.textContent = `${score}점`;
   const ok = score >= 80;
   playEffect(ok);
+  totalAttempts += 1;
+  if (!focusStats[currentLesson.focus]) {
+    focusStats[currentLesson.focus] = { attempts: 0, scoreSum: 0 };
+  }
+  focusStats[currentLesson.focus].attempts += 1;
+  focusStats[currentLesson.focus].scoreSum += score;
 
   if (ok) {
     xp += 15;
     streak += 1;
+    totalCorrect += 1;
     feedbackBox.className = 'feedback good';
     feedbackBox.textContent = `정답! ${score}점\n${currentLesson.tip}`;
     unlockNext();
