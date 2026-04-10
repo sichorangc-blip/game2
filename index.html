@@ -11,66 +11,47 @@
       <div>
         <p class="badge">Kids Pronunciation Adventure</p>
         <h1>아이셋 또박키즈</h1>
-        <p class="subtitle">입모양 애니메이션을 보며 ㄹ/ㄴ/ㅅ/ㅍ부터 이중받침까지 게임처럼!</p>
+        <p class="subtitle">단계별 발음 훈련과 보상으로 또박또박 자신감!</p>
       </div>
       <div class="chips">
+        <p>👧 아이 <strong id="childNameText">미등록</strong></p>
         <p>⭐ 점수 <strong id="xpText">0</strong></p>
         <p>🔥 연속 성공 <strong id="streakText">0</strong></p>
         <p>🏅 스티커 <strong id="stickerText">0</strong></p>
-        <p>🎚️ 진행도 <strong id="gradeText">Grade 1</strong></p>
-        <button id="dailyMissionBtn" class="primary">현재 Grade 도전</button>
       </div>
     </header>
 
-    <section class="sticker-row">
-      <article class="sticker card-mini">
-        <div class="emoji">🦖</div>
-        <p>공룡 코치와 함께</p>
-      </article>
-      <article class="sticker card-mini">
-        <div class="emoji">🧸</div>
-        <p>또박또박 챌린지</p>
-      </article>
-      <article class="sticker card-mini">
-        <div class="emoji">🌈</div>
-        <p>무지개 별 보상</p>
-      </article>
-      <article class="sticker card-mini">
-        <div class="emoji">🚀</div>
-        <p>발음 레벨 업</p>
-      </article>
-    </section>
-
-    <section class="analysis-wrap">
-      <article class="analysis-card">
-        <h2>코로나 키즈 발음 분석 반영</h2>
-        <p class="muted">요즘 아이들이 어려워하는 발음 패턴을 반영해 문제 수와 유형을 늘렸어요.</p>
-        <ul id="analysisList" class="analysis-list"></ul>
-      </article>
-    </section>
-
-    <main class="layout">
-      <section class="card">
-        <h2>1) 단계 선택</h2>
-        <p class="muted">Grade 1부터 Grade 10까지, 총 240문제를 순차 해금하며 진행해요.</p>
-        <div id="stageTabs" class="stage-tabs"></div>
-        <div id="lessonList" class="lesson-list"></div>
+    <main class="layout single" id="appViews">
+      <section class="card view active" data-view="home">
+        <h2>메인 화면</h2>
+        <p class="muted">필요한 메뉴를 눌러 화면을 이동해요.</p>
+        <div class="home-menu">
+          <button class="menu-btn primary" data-target="practice">진도 나가기</button>
+          <button class="menu-btn secondary" data-target="progress">학습현황</button>
+          <button class="menu-btn ghost" data-target="guide">애니메이션 가이드</button>
+          <button class="menu-btn ghost" data-target="report">학부모 리포트</button>
+        </div>
       </section>
 
-      <section class="card practice-card">
-        <h2>2) 듣고 따라 말하기</h2>
+      <section class="card view" data-view="practice">
+        <div class="view-head"><h2>진도 나가기</h2><button class="back-btn" data-target="home">메인으로</button></div>
+        <p class="muted">Grade 1부터 순서대로 해금됩니다. (80점 이상 시 다음 문제 해금)</p>
+        <p class="muted" id="gradeText">Grade 1</p>
+        <div id="stageTabs" class="stage-tabs"></div>
+        <div id="lessonList" class="lesson-list"></div>
+
         <p id="targetSentence" class="target">단계를 선택하면 문장이 나와요.</p>
+        <div class="controls">
+          <button id="listenBtn" class="secondary" disabled>코치 목소리 듣기 🔊</button>
+          <button id="recordBtn" class="primary" disabled>녹음 시작 🎤</button>
+          <button id="playbackBtn" class="ghost" disabled>내 목소리 듣기 ▶</button>
+          <button id="dailyMissionBtn" class="ghost">현재 문제 바로가기</button>
+        </div>
 
         <div class="coach-controls">
           <label for="speedRange">코치 속도</label>
           <input id="speedRange" type="range" min="0.65" max="1" step="0.05" value="0.85" />
           <span id="speedText">0.85x</span>
-        </div>
-
-        <div class="controls">
-          <button id="listenBtn" class="secondary" disabled>다정한 코치 목소리 듣기 🔊</button>
-          <button id="recordBtn" class="primary" disabled>녹음 시작 🎤</button>
-          <button id="playbackBtn" class="ghost" disabled>내 목소리 듣기 ▶</button>
         </div>
 
         <div class="status-grid">
@@ -84,12 +65,18 @@
           <progress id="scoreMeter" max="100" value="0"></progress>
           <p id="scoreText">0점</p>
         </div>
-
         <div id="feedbackBox" class="feedback">단계를 고르고 연습을 시작해 주세요.</div>
       </section>
 
-      <section class="card">
-        <h2>3) 입모양 애니메이션 가이드</h2>
+      <section class="card view" data-view="progress">
+        <div class="view-head"><h2>학습현황</h2><button class="back-btn" data-target="home">메인으로</button></div>
+        <div class="analysis-card">
+          <ul id="analysisList" class="analysis-list"></ul>
+        </div>
+      </section>
+
+      <section class="card view" data-view="guide">
+        <div class="view-head"><h2>애니메이션 가이드</h2><button class="back-btn" data-target="home">메인으로</button></div>
         <div class="mouth-stage" id="mouthStage" data-shape="default">
           <div class="face">
             <div class="eyes"></div>
@@ -106,19 +93,24 @@
         <ol id="howToList" class="howto"></ol>
       </section>
 
-      <section class="card">
-        <h2>4) 학부모 리포트</h2>
+      <section class="card view" data-view="report">
+        <div class="view-head"><h2>학부모 리포트</h2><button class="back-btn" data-target="home">메인으로</button></div>
         <ul id="historyList" class="history"></ul>
       </section>
     </main>
 
-    <template id="stageTemplate">
-      <button class="stage-btn" type="button"></button>
-    </template>
+    <section id="profileModal" class="modal">
+      <form id="profileForm" class="modal-card">
+        <h3>처음 시작해요!</h3>
+        <p class="muted">아이 정보를 입력하면 저장돼요.</p>
+        <label>아이 이름 <input id="childNameInput" required placeholder="예: 유정" /></label>
+        <label>나이 <input id="childAgeInput" type="number" min="3" max="13" required /></label>
+        <button class="primary" type="submit">시작하기</button>
+      </form>
+    </section>
 
-    <template id="lessonTemplate">
-      <button class="lesson-btn" type="button"></button>
-    </template>
+    <template id="stageTemplate"><button class="stage-btn" type="button"></button></template>
+    <template id="lessonTemplate"><button class="lesson-btn" type="button"></button></template>
 
     <script src="app.js"></script>
   </body>
