@@ -69,8 +69,28 @@ $sdkCandidates = @(
   $env:ANDROID_HOME,
   $env:ANDROID_SDK_ROOT,
   "$env:LOCALAPPDATA\\Android\\Sdk",
+  "$env:USERPROFILE\\AppData\\Local\\Android\\Sdk",
   "C:\\Android\\Sdk"
 ) | Where-Object { $_ -and $_.Trim() -ne "" } | Select-Object -Unique
+
+$studioOptionDirs = Get-ChildItem "$env:APPDATA\\Google" -Directory -ErrorAction SilentlyContinue |
+  Where-Object { $_.Name -like "AndroidStudio*" }
+
+foreach ($dir in $studioOptionDirs) {
+  $xmlFiles = Get-ChildItem "$($dir.FullName)\\options\\*.xml" -File -ErrorAction SilentlyContinue
+  foreach ($xml in $xmlFiles) {
+    $matches = Select-String -Path $xml.FullName -Pattern 'android\.sdk\.path\" value=\"([^\"]+)\"' -AllMatches -ErrorAction SilentlyContinue
+    foreach ($m in $matches) {
+      foreach ($g in $m.Matches) {
+        if ($g.Groups.Count -gt 1) {
+          $sdkCandidates += $g.Groups[1].Value
+        }
+      }
+    }
+  }
+}
+
+$sdkCandidates = $sdkCandidates | Where-Object { $_ -and $_.Trim() -ne "" } | Select-Object -Unique
 
 $resolvedSdkDir = $null
 foreach ($sdkCandidate in $sdkCandidates) {
@@ -82,8 +102,11 @@ foreach ($sdkCandidate in $sdkCandidates) {
 
 if (-not $resolvedSdkDir) {
   Write-Host "Android SDK not found." -ForegroundColor Red
+  Write-Host "Checked SDK candidates:" -ForegroundColor Yellow
+  $sdkCandidates | ForEach-Object { Write-Host " - $_" -ForegroundColor Yellow }
   Write-Host "Install Android Studio SDK or set ANDROID_HOME / ANDROID_SDK_ROOT." -ForegroundColor Yellow
-  Write-Host "Example: setx ANDROID_HOME \"$env:LOCALAPPDATA\\Android\\Sdk\"" -ForegroundColor Yellow
+  Write-Host "Example (current shell): `$env:ANDROID_HOME=`\"$env:USERPROFILE\\AppData\\Local\\Android\\Sdk`\"" -ForegroundColor Yellow
+  Write-Host "Example (persist): setx ANDROID_HOME \"$env:USERPROFILE\\AppData\\Local\\Android\\Sdk\"" -ForegroundColor Yellow
   exit 1
 }
 

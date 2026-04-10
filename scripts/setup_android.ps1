@@ -56,6 +56,7 @@ $sdkCandidates = @(
   $env:ANDROID_HOME,
   $env:ANDROID_SDK_ROOT,
   "$env:LOCALAPPDATA\\Android\\Sdk",
+  "$env:USERPROFILE\\AppData\\Local\\Android\\Sdk",
   "C:\\Android\\Sdk"
 ) | Where-Object { $_ -and $_.Trim() -ne "" } | Select-Object -Unique
 
