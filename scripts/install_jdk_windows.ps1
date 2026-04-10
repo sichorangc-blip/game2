@@ -5,8 +5,8 @@ if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
   exit 1
 }
 
-Write-Host "Installing Temurin JDK 17 via winget..."
-winget install -e --id EclipseAdoptium.Temurin.17.JDK --accept-source-agreements --accept-package-agreements
+Write-Host "Installing Temurin JDK 21 via winget..."
+winget install -e --id EclipseAdoptium.Temurin.21.JDK --accept-source-agreements --accept-package-agreements
 
 $candidates = Get-ChildItem "C:\Program Files\Eclipse Adoptium" -Directory -ErrorAction SilentlyContinue |
   Sort-Object Name -Descending

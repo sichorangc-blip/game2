@@ -99,7 +99,7 @@ npm run apk:build:win
   `Missing script: jdk:install:win`가 나오면 오래된 압축본입니다. 최신 코드로 갱신하거나 바로 아래 `winget` 명령을 사용하세요.
   JDK가 없으면 설치:
   ```powershell
-  winget install -e --id EclipseAdoptium.Temurin.17.JDK
+  winget install -e --id EclipseAdoptium.Temurin.21.JDK
   ```
 - `Your project path contains non-ASCII characters`  
   → Windows 한글 경로에서 나는 Gradle 경고입니다.  
@@ -107,6 +107,7 @@ npm run apk:build:win
 - `SDK location not found`  
   → Android SDK 경로를 찾지 못한 경우입니다.  
   `apk:build:win`은 `ANDROID_HOME`, `ANDROID_SDK_ROOT`, `%LOCALAPPDATA%\\Android\\Sdk`를 순서대로 확인해 `android/local.properties`의 `sdk.dir`를 자동 생성합니다.  
+  경로에 한글이 포함되면 `sdk.dir`에 8.3 short path(ASCII)를 자동 적용해 aapt2 인코딩 문제를 줄입니다.
   이 오류가 나오면 **Android SDK가 아직 설치되지 않았거나** 경로가 비어있는 상태입니다.
   자동 탐지 실패 시 아래를 실행하세요:
   ```powershell

@@ -121,9 +121,17 @@ if (-not $resolvedSdkDir) {
 }
 
 $localPropsPath = "android\\local.properties"
-$escapedSdkDir = $resolvedSdkDir.Replace("\", "\\")
+$sdkForGradle = $resolvedSdkDir
+if ($resolvedSdkDir -match "[^\u0000-\u007F]") {
+  $shortSdk = (cmd /c "for %I in (\"$resolvedSdkDir\") do @echo %~sI").Trim()
+  if ($shortSdk) {
+    $sdkForGradle = $shortSdk
+    Write-Host "Using short ASCII SDK path for Gradle: $sdkForGradle"
+  }
+}
+$escapedSdkDir = $sdkForGradle.Replace("\", "\\")
 Set-Content -Path $localPropsPath -Value "sdk.dir=$escapedSdkDir"
-Write-Host "Set Android SDK path in android/local.properties: $resolvedSdkDir"
+Write-Host "Set Android SDK path in android/local.properties: $sdkForGradle"
 
 $javaResolved = $false
 
@@ -166,13 +174,13 @@ else {
 
 if (-not $javaResolved -and -not (Get-Command java -ErrorAction SilentlyContinue)) {
   if (Get-Command winget -ErrorAction SilentlyContinue) {
-    Write-Host "Java not found. Trying automatic JDK install (Temurin 17) via winget..."
-    winget install -e --id EclipseAdoptium.Temurin.17.JDK --accept-source-agreements --accept-package-agreements
+    Write-Host "Java not found. Trying automatic JDK install (Temurin 21) via winget..."
+    winget install -e --id EclipseAdoptium.Temurin.21.JDK --accept-source-agreements --accept-package-agreements
 
     $retryHomes = @(
       [Environment]::GetEnvironmentVariable("JAVA_HOME", "User"),
       [Environment]::GetEnvironmentVariable("JAVA_HOME", "Machine"),
-      "C:\\Program Files\\Eclipse Adoptium\\jdk-17",
+      "C:\\Program Files\\Eclipse Adoptium\\jdk-21",
       "C:\\Program Files\\Eclipse Adoptium"
     ) | Where-Object { $_ -and $_.Trim() -ne "" } | Select-Object -Unique
 
@@ -196,14 +204,33 @@ if (-not $javaResolved -and -not (Get-Command java -ErrorAction SilentlyContinue
 }
 
 if (-not $javaResolved -and -not (Get-Command java -ErrorAction SilentlyContinue)) {
-  Write-Host "Java (JDK 17+) not found. Install Android Studio (with JDK) or set JAVA_HOME first." -ForegroundColor Red
+  Write-Host "Java (JDK 21+) not found. Install Android Studio (with JDK) or set JAVA_HOME first." -ForegroundColor Red
   Write-Host "Current JAVA_HOME: $env:JAVA_HOME" -ForegroundColor Yellow
   Write-Host "Checked common paths under Android Studio / Adoptium / Microsoft / Java folders." -ForegroundColor Yellow
   Write-Host "Example (current shell): `$env:JAVA_HOME='C:\\Program Files\\Android\\Android Studio\\jbr'; `$env:Path=`\"$env:JAVA_HOME\\bin;`$env:Path`\"" -ForegroundColor Yellow
   Write-Host "Example (persist): setx JAVA_HOME \"C:\\Program Files\\Android\\Android Studio\\jbr\"" -ForegroundColor Yellow
   Write-Host "Auto install helper: npm run jdk:install:win" -ForegroundColor Yellow
-  Write-Host "If needed, install JDK 17 with: winget install -e --id EclipseAdoptium.Temurin.17.JDK" -ForegroundColor Yellow
+  Write-Host "If needed, install JDK 21 with: winget install -e --id EclipseAdoptium.Temurin.21.JDK" -ForegroundColor Yellow
   exit 1
+}
+
+$javacExe = Join-Path $env:JAVA_HOME "bin\\javac.exe"
+if (Test-Path $javacExe) {
+  $javacVersion = & $javacExe -version 2>&1
+  if ($javacVersion -notmatch "21") {
+    Write-Host "Detected JDK is not 21 ($javacVersion). Trying to install/use Temurin 21..." -ForegroundColor Yellow
+    if (Get-Command winget -ErrorAction SilentlyContinue) {
+      winget install -e --id EclipseAdoptium.Temurin.21.JDK --accept-source-agreements --accept-package-agreements
+      $jdk21 = Get-ChildItem "C:\\Program Files\\Eclipse Adoptium" -Directory -ErrorAction SilentlyContinue |
+        Where-Object { $_.Name -like "jdk-21*" } | Sort-Object Name -Descending | Select-Object -First 1
+      if ($jdk21) {
+        $env:JAVA_HOME = $jdk21.FullName
+        $env:Path = "$env:JAVA_HOME\\bin;$env:Path"
+        setx JAVA_HOME "$env:JAVA_HOME" | Out-Null
+        Write-Host "JAVA_HOME switched to JDK 21: $env:JAVA_HOME"
+      }
+    }
+  }
 }
 
 Write-Host "4) Build Debug APK"
