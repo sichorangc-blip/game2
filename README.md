@@ -101,6 +101,9 @@ npm run apk:build:win
   ```powershell
   winget install -e --id EclipseAdoptium.Temurin.17.JDK
   ```
+- `Your project path contains non-ASCII characters`  
+  → Windows 한글 경로에서 나는 Gradle 경고입니다.  
+  `apk:build:win` 스크립트는 `android/gradle.properties`에 `android.overridePathCheck=true`를 자동 추가합니다.
 
 생성 위치:
 - `android\app\build\outputs\apk\debug\app-debug.apk`

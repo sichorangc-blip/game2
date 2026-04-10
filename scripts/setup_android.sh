@@ -27,4 +27,9 @@ fi
 echo "3) 웹 자산 동기화"
 npx cap sync android
 
+if [ -f "android/gradle.properties" ] && ! grep -q "^android.overridePathCheck=true$" android/gradle.properties; then
+  printf "\nandroid.overridePathCheck=true\n" >> android/gradle.properties
+  echo "android/gradle.properties에 android.overridePathCheck=true 추가 완료"
+fi
+
 echo "완료: Android Studio에서 프로젝트를 열어 APK/AAB를 빌드하세요."

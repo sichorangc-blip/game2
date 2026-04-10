@@ -44,4 +44,12 @@ else {
 Write-Host "3) Sync Android platform"
 Invoke-Step "npx cap sync android" "Failed to sync Android platform."
 
+if (Test-Path "android\\gradle.properties") {
+  $props = Get-Content "android\\gradle.properties" -Raw
+  if ($props -notmatch "(?m)^android\\.overridePathCheck=true\\s*$") {
+    Add-Content -Path "android\\gradle.properties" -Value "`nandroid.overridePathCheck=true"
+    Write-Host "Added android.overridePathCheck=true to android/gradle.properties"
+  }
+}
+
 Write-Host "Done. Open Android Studio with: npx cap open android" -ForegroundColor Green

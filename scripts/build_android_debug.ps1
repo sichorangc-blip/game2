@@ -56,6 +56,15 @@ if (-not (Test-Path "android")) {
   exit 1
 }
 
+$gradlePropsPath = "android\\gradle.properties"
+if (Test-Path $gradlePropsPath) {
+  $gradleProps = Get-Content $gradlePropsPath -Raw
+  if ($gradleProps -notmatch "(?m)^android\\.overridePathCheck=true\\s*$") {
+    Add-Content -Path $gradlePropsPath -Value "`nandroid.overridePathCheck=true"
+    Write-Host "Added android.overridePathCheck=true to android/gradle.properties"
+  }
+}
+
 $javaResolved = $false
 
 if (-not (Get-Command java -ErrorAction SilentlyContinue)) {
