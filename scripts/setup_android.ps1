@@ -52,4 +52,28 @@ if (Test-Path "android\\gradle.properties") {
   }
 }
 
+$sdkCandidates = @(
+  $env:ANDROID_HOME,
+  $env:ANDROID_SDK_ROOT,
+  "$env:LOCALAPPDATA\\Android\\Sdk",
+  "C:\\Android\\Sdk"
+) | Where-Object { $_ -and $_.Trim() -ne "" } | Select-Object -Unique
+
+$resolvedSdkDir = $null
+foreach ($sdkCandidate in $sdkCandidates) {
+  if (Test-Path $sdkCandidate) {
+    $resolvedSdkDir = $sdkCandidate
+    break
+  }
+}
+
+if ($resolvedSdkDir) {
+  $escapedSdkDir = $resolvedSdkDir.Replace("\", "\\")
+  Set-Content -Path "android\\local.properties" -Value "sdk.dir=$escapedSdkDir"
+  Write-Host "Set Android SDK path in android/local.properties: $resolvedSdkDir"
+}
+else {
+  Write-Host "Android SDK path not found automatically. Set ANDROID_HOME or ANDROID_SDK_ROOT." -ForegroundColor Yellow
+}
+
 Write-Host "Done. Open Android Studio with: npx cap open android" -ForegroundColor Green

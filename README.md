@@ -104,6 +104,13 @@ npm run apk:build:win
 - `Your project path contains non-ASCII characters`  
   → Windows 한글 경로에서 나는 Gradle 경고입니다.  
   `apk:build:win` 스크립트는 `android/gradle.properties`에 `android.overridePathCheck=true`를 자동 추가합니다.
+- `SDK location not found`  
+  → Android SDK 경로를 찾지 못한 경우입니다.  
+  `apk:build:win`은 `ANDROID_HOME`, `ANDROID_SDK_ROOT`, `%LOCALAPPDATA%\\Android\\Sdk`를 순서대로 확인해 `android/local.properties`의 `sdk.dir`를 자동 생성합니다.  
+  자동 탐지 실패 시 아래를 실행하세요:
+  ```powershell
+  setx ANDROID_HOME "$env:LOCALAPPDATA\Android\Sdk"
+  ```
 
 생성 위치:
 - `android\app\build\outputs\apk\debug\app-debug.apk`

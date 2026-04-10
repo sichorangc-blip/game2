@@ -32,4 +32,14 @@ if [ -f "android/gradle.properties" ] && ! grep -q "^android.overridePathCheck=t
   echo "android/gradle.properties에 android.overridePathCheck=true 추가 완료"
 fi
 
+SDK_CANDIDATES=("${ANDROID_HOME:-}" "${ANDROID_SDK_ROOT:-}" "${LOCALAPPDATA:-}/Android/Sdk" "/c/Android/Sdk")
+for sdk in "${SDK_CANDIDATES[@]}"; do
+  if [ -n "$sdk" ] && [ -d "$sdk" ]; then
+    esc_sdk=$(printf '%s' "$sdk" | sed 's/\\/\\\\/g')
+    printf "sdk.dir=%s\n" "$esc_sdk" > android/local.properties
+    echo "android/local.properties에 sdk.dir 설정: $sdk"
+    break
+  fi
+done
+
 echo "완료: Android Studio에서 프로젝트를 열어 APK/AAB를 빌드하세요."

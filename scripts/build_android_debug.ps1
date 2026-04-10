@@ -65,6 +65,33 @@ if (Test-Path $gradlePropsPath) {
   }
 }
 
+$sdkCandidates = @(
+  $env:ANDROID_HOME,
+  $env:ANDROID_SDK_ROOT,
+  "$env:LOCALAPPDATA\\Android\\Sdk",
+  "C:\\Android\\Sdk"
+) | Where-Object { $_ -and $_.Trim() -ne "" } | Select-Object -Unique
+
+$resolvedSdkDir = $null
+foreach ($sdkCandidate in $sdkCandidates) {
+  if (Test-Path $sdkCandidate) {
+    $resolvedSdkDir = $sdkCandidate
+    break
+  }
+}
+
+if (-not $resolvedSdkDir) {
+  Write-Host "Android SDK not found." -ForegroundColor Red
+  Write-Host "Install Android Studio SDK or set ANDROID_HOME / ANDROID_SDK_ROOT." -ForegroundColor Yellow
+  Write-Host "Example: setx ANDROID_HOME \"$env:LOCALAPPDATA\\Android\\Sdk\"" -ForegroundColor Yellow
+  exit 1
+}
+
+$localPropsPath = "android\\local.properties"
+$escapedSdkDir = $resolvedSdkDir.Replace("\", "\\")
+Set-Content -Path $localPropsPath -Value "sdk.dir=$escapedSdkDir"
+Write-Host "Set Android SDK path in android/local.properties: $resolvedSdkDir"
+
 $javaResolved = $false
 
 if (-not (Get-Command java -ErrorAction SilentlyContinue)) {
