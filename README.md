@@ -16,6 +16,7 @@
 - 정답/오답 효과음 추가
 - 학습현황 고도화: 총 시도/성공률/약점 발음(평균 점수 낮은 상위 3개) 표시
 - 모바일 음성 fallback: Web Speech 미지원 시 Capacitor Speech/TTS 플러그인이 설치된 경우 해당 경로 사용 (선택)
+- 브랜드 로고 적용: `assets/tto-logo.svg`
 
 ## 1) 로컬에서 실행
 

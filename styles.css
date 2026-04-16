@@ -11,6 +11,8 @@
 * { box-sizing: border-box; font-family: "Pretendard", "Noto Sans KR", sans-serif; }
 body { margin: 0; color: var(--text); background: radial-gradient(circle at 10% 10%, #dff6ff, #fff0f6 45%, #f2edff); }
 .hero { max-width: 1120px; margin: 0 auto; padding: 20px 18px 12px; display: flex; justify-content: space-between; gap: 12px; }
+.brand-wrap { display: flex; gap: 12px; align-items: center; }
+.brand-logo { width: 74px; height: 74px; border-radius: 18px; box-shadow: 0 8px 16px rgba(54, 68, 130, .24); }
 .rainbow { background: linear-gradient(110deg, rgba(255,255,255,.7), rgba(223,246,255,.7), rgba(255,240,246,.7)); border-bottom: 2px dashed #d8d2ff; }
 .badge { display: inline-block; margin: 0 0 8px; font-size: 12px; padding: 6px 10px; border-radius: 999px; background: #fff7cf; }
 h1 { margin: 0; color: #43348d; }
