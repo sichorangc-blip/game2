@@ -1,0 +1,78 @@
+:root {
+  --card: #fff;
+  --primary: #6a6dff;
+  --secondary: #ffb347;
+  --text: #2a2354;
+  --muted: #6f6b90;
+  --good: #16a34a;
+  --warn: #ea580c;
+  --shadow: 0 14px 24px rgba(53, 44, 114, 0.14);
+}
+* { box-sizing: border-box; font-family: "Pretendard", "Noto Sans KR", sans-serif; }
+body { margin: 0; color: var(--text); background: radial-gradient(circle at 10% 10%, #dff6ff, #fff0f6 45%, #f2edff); }
+.hero { max-width: 1120px; margin: 0 auto; padding: 20px 18px 12px; display: flex; justify-content: space-between; gap: 12px; }
+.brand-wrap { display: flex; gap: 12px; align-items: center; }
+.brand-logo { width: 74px; height: 74px; border-radius: 18px; box-shadow: 0 8px 16px rgba(54, 68, 130, .24); }
+.rainbow { background: linear-gradient(110deg, rgba(255,255,255,.7), rgba(223,246,255,.7), rgba(255,240,246,.7)); border-bottom: 2px dashed #d8d2ff; }
+.badge { display: inline-block; margin: 0 0 8px; font-size: 12px; padding: 6px 10px; border-radius: 999px; background: #fff7cf; }
+h1 { margin: 0; color: #43348d; }
+.subtitle { margin: 8px 0 0; }
+.muted { color: var(--muted); font-size: .92rem; }
+.chips { display: grid; gap: 6px; }
+.chips p { margin: 0; padding: 8px 10px; border-radius: 10px; background: #ffffffcc; border: 1px solid #ece9ff; }
+.layout { max-width: 1120px; margin: 12px auto; padding: 0 18px 30px; display: grid; gap: 14px; }
+.layout.single { grid-template-columns: 1fr; }
+.card { background: var(--card); border-radius: 18px; padding: 16px; box-shadow: var(--shadow); border: 1px solid #efecff; }
+.view { display: none; }
+.view.active { display: block; }
+.view-head { display: flex; justify-content: space-between; align-items: center; }
+.home-menu { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-top: 12px; }
+.menu-btn { min-height: 64px; }
+.back-btn { border: none; border-radius: 10px; padding: 8px 10px; background: #eef1ff; cursor: pointer; font-weight: 700; }
+.stage-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+.stage-btn { border: 1px solid #c9d4ff; background: #f7f9ff; border-radius: 20px; padding: 8px 12px; cursor: pointer; }
+.stage-btn.active { background: var(--primary); color: #fff; }
+.lesson-list { display: grid; gap: 8px; max-height: 240px; overflow: auto; margin-bottom: 10px; }
+.lesson-btn { border: 2px solid #dce4ff; background: #fff; border-radius: 11px; text-align: left; padding: 10px; cursor: pointer; }
+.lesson-btn.active { border-color: var(--primary); background: #edf0ff; }
+.target { min-height: 48px; border-radius: 12px; background: #f5f7ff; padding: 12px; font-size: 1.05rem; }
+.controls { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
+.coach-controls { display: flex; align-items: center; gap: 8px; margin: 10px 0; }
+button { border: none; border-radius: 12px; padding: 10px 13px; font-weight: 700; cursor: pointer; }
+button:disabled { opacity: .45; cursor: not-allowed; }
+.primary { background: var(--primary); color: #fff; }
+.secondary { background: var(--secondary); color: #3a240a; }
+.ghost { background: #eef1ff; color: #26315f; }
+.status-grid p { margin: 5px 0; font-size: .95rem; }
+progress { width: 100%; height: 15px; accent-color: #7c5cff; }
+.feedback { margin-top: 10px; padding: 12px; border-radius: 10px; background: #f7f8ff; border-left: 5px solid #c4cbff; white-space: pre-line; }
+.feedback.good { border-left-color: var(--good); background: #ecfdf5; }
+.feedback.warn { border-left-color: var(--warn); background: #fff7ed; }
+.analysis-list { margin: 0; padding-left: 20px; }
+.analysis-list li { margin: 8px 0; }
+.mouth-stage { margin: 10px 0; border-radius: 14px; padding: 14px; background: linear-gradient(180deg, #eff6ff, #fef2f2); }
+.face { width: 190px; margin: 0 auto; display: grid; justify-items: center; }
+.eyes { width: 88px; height: 8px; border-radius: 999px; background: repeating-linear-gradient(90deg, #3b3567 0 8px, transparent 8px 20px); margin-bottom: 10px; }
+.mouth-shell { width: 120px; height: 78px; background: #2c204f; border-radius: 0 0 60px 60px; position: relative; overflow: hidden; }
+.lips { position: absolute; left: 0; width: 100%; background: #ff7390; }
+.lips.upper { top: 0; height: 12px; }
+.lips.lower { bottom: 0; height: 18px; }
+.teeth { position: absolute; top: 12px; left: 10px; right: 10px; height: 11px; border-radius: 4px; background: #fff; opacity: .45; }
+.tongue { position: absolute; bottom: 10px; left: 26px; width: 68px; height: 26px; border-radius: 26px 26px 10px 10px; background: #ff5e82; }
+.air { position: absolute; right: 8px; top: 36px; width: 8px; height: 8px; border-radius: 50%; background: #9ee6ff; opacity: 0; }
+.mouth-stage[data-shape="ㄹ"] .tongue { height: 36px; bottom: 20px; animation: tongueTap .7s infinite; }
+.mouth-stage[data-shape="ㅅ"] .air { opacity: .9; animation: airFlow .8s infinite; }
+.mouth-stage[data-shape="ㅍ"] .air { opacity: .95; animation: airBurst .7s infinite; }
+.mouth-stage[data-shape="ㅍ"] .mouth-shell { animation: puff 1s infinite; }
+.guide-box { background: #f8f4ff; border-radius: 10px; padding: 10px; border-left: 5px solid #bfa6ff; }
+.history { margin: 0; padding-left: 20px; }
+.history li { margin: 7px 0; }
+.modal { position: fixed; inset: 0; background: rgba(30, 25, 70, .45); display: none; align-items: center; justify-content: center; z-index: 10; }
+.modal.show { display: flex; }
+.modal-card { width: min(420px, 90vw); background: #fff; border-radius: 16px; padding: 16px; display: grid; gap: 10px; }
+.modal-card input { width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #d8d2ff; }
+@keyframes tongueTap { 0%,100% { transform: translateY(0);} 50% { transform: translateY(-6px);} }
+@keyframes airFlow { 0% { transform: translateX(0); opacity:.9;} 100% { transform: translateX(16px); opacity:0;} }
+@keyframes airBurst { 0%,35% { transform: scale(.5); opacity:0;} 45% {opacity:.95;} 100% { transform: scale(1.6) translateX(14px); opacity:0;} }
+@keyframes puff { 0%,30% { transform: scaleY(.8);} 45%,80% { transform: scaleY(1);} 100% { transform: scaleY(.8);} }
+@media (max-width: 700px) { .hero { flex-direction: column; } }

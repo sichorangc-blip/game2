@@ -1,0 +1,30 @@
+{
+  "name": "ttobak-kids",
+  "version": "1.2.0",
+  "private": true,
+  "description": "Kid-friendly Korean pronunciation trainer web app with Android APK packaging via Capacitor",
+  "scripts": {
+    "serve": "node ./scripts/serve.js",
+    "serve:8080": "npx http-server . -p 8080 -c-1",
+    "serve:py": "python -m http.server 8080",
+    "cap:prepare": "node ./scripts/prepare_web_assets.js",
+    "jdk:install:win": "powershell -ExecutionPolicy Bypass -File .\\scripts\\install_jdk_windows.ps1",
+    "sdk:install:win": "powershell -ExecutionPolicy Bypass -File .\\scripts\\install_android_sdk_windows.ps1",
+    "android:setup:win": "powershell -ExecutionPolicy Bypass -File .\\scripts\\setup_android.ps1",
+    "android:init": "npm run cap:prepare && npx cap add android && npx cap sync android",
+    "cap:sync": "npm run cap:prepare && npx cap sync android",
+    "cap:open": "npx cap open android",
+    "apk:debug": "cd android && ./gradlew assembleDebug",
+    "apk:debug:win": "cd android && gradlew.bat assembleDebug",
+    "apk:build:win": "powershell -ExecutionPolicy Bypass -File .\\scripts\\build_android_debug.ps1",
+    "aab:release": "cd android && ./gradlew bundleRelease",
+    "aab:release:win": "cd android && gradlew.bat bundleRelease"
+  },
+  "devDependencies": {
+    "@capacitor/android": "^7.4.2",
+    "@capacitor/cli": "^7.4.2",
+    "@capacitor/core": "^7.4.2",
+    "http-server": "^14.1.1",
+    "typescript": "^5.9.3"
+  }
+}
