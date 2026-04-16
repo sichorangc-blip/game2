@@ -15,7 +15,7 @@
 - 첫 실행 시 아이 정보 입력(이름/나이) 저장
 - 정답/오답 효과음 추가
 - 학습현황 고도화: 총 시도/성공률/약점 발음(평균 점수 낮은 상위 3개) 표시
-- 모바일 음성 fallback: Web Speech 미지원 시 Capacitor Speech/TTS 플러그인 경로 사용
+- 모바일 음성 fallback: Web Speech 미지원 시 Capacitor Speech/TTS 플러그인이 설치된 경우 해당 경로 사용 (선택)
 
 ## 1) 로컬에서 실행
 
