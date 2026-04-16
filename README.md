@@ -15,7 +15,7 @@
 - 첫 실행 시 아이 정보 입력(이름/나이) 저장
 - 정답/오답 효과음 추가
 - 학습현황 고도화: 총 시도/성공률/약점 발음(평균 점수 낮은 상위 3개) 표시
-- 모바일 음성 fallback: Web Speech 미지원 시 Capacitor Speech/TTS 플러그인이 설치된 경우 해당 경로 사용 (선택)
+- 모바일 음성 안정화: Android 네이티브(Capacitor)에서는 SpeechRecognition 플러그인을 우선 사용하고, 웹 환경에서는 Web Speech API로 자동 fallback
 - 브랜드 로고 적용: `assets/tto-logo.svg`
 
 ## 1) 로컬에서 실행
@@ -143,6 +143,7 @@ cd android
 1. Chrome/Edge 최신 버전 사용
 2. 사이트 마이크 권한 허용
 3. 인식 실패 시 `내 목소리 듣기`로 셀프 비교 연습
+4. Android APK에서는 WebView 제약으로 인해 브라우저와 동작이 다를 수 있어, SpeechRecognition Capacitor 플러그인 설치/동기화(`npx cap sync android`)가 필요할 수 있습니다.
 
 ## 커리큘럼 설계 참고(조사 반영)
 - 팬데믹 시기 아동 집단의 언어/의사소통 발달 지연 및 변동성 보고를 참고해 **짧고 반복적인 단계형 구조**로 문제를 확대했습니다.

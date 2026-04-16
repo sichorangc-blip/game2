@@ -66,6 +66,8 @@ let stickerCount = 0;
 let timer = null;
 let mediaRecorder = null;
 let recordedBlobUrl = null;
+let pluginRecognitionActive = false;
+let pluginLastTranscript = '';
 let totalAttempts = 0;
 let totalCorrect = 0;
 const focusStats = {};
@@ -102,6 +104,7 @@ const profileForm = document.querySelector('#profileForm');
 const childNameInput = document.querySelector('#childNameInput');
 const childAgeInput = document.querySelector('#childAgeInput');
 const capPlugins = window.Capacitor?.Plugins || {};
+const isCapacitorNative = !!window.Capacitor?.isNativePlatform?.();
 
 const recognition = window.SpeechRecognition || window.webkitSpeechRecognition
   ? new (window.SpeechRecognition || window.webkitSpeechRecognition)()
@@ -254,6 +257,12 @@ async function speakSentence(sentence) {
 }
 
 async function startRecording() {
+  pluginLastTranscript = '';
+  const shouldUsePluginRecognition = isCapacitorNative && !!capPlugins.SpeechRecognition?.start;
+  if (shouldUsePluginRecognition) {
+    const started = await startPluginRecognition();
+    if (started) return;
+  }
   if (!navigator.mediaDevices?.getUserMedia) {
     statusText.textContent = '마이크 미지원 기기';
     return;
@@ -277,26 +286,7 @@ async function startRecording() {
     if (recognition) { try { recognition.start(); } catch {} }
     startTimer(8);
   } catch {
-    if (capPlugins.SpeechRecognition?.requestPermissions) {
-      try {
-        await capPlugins.SpeechRecognition.requestPermissions();
-        const result = await capPlugins.SpeechRecognition.start({
-          language: 'ko-KR',
-          maxResults: 1,
-          prompt: '문장을 또박또박 읽어주세요',
-          partialResults: false,
-        });
-        const transcript = result.matches?.[0] || '';
-        recognizedText.textContent = transcript || '-';
-        statusText.textContent = '음성 인식 완료';
-        if (transcript) evaluateResult(transcript);
-        return;
-      } catch {
-        statusText.textContent = '마이크 권한 필요';
-      }
-    } else {
-      statusText.textContent = '마이크 권한 필요';
-    }
+    statusText.textContent = '마이크 권한 필요';
   }
 }
 
@@ -304,9 +294,61 @@ function stopRecording() {
   clearInterval(timer);
   timerText.textContent = '0초';
   if (mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
+  if (pluginRecognitionActive) stopPluginRecognition();
   if (recognition) { try { recognition.stop(); } catch {} }
   recordBtn.textContent = '녹음 시작 🎤';
   recordBtn.dataset.mode = 'idle';
+}
+
+async function startPluginRecognition() {
+  try {
+    if (capPlugins.SpeechRecognition.requestPermissions) {
+      await capPlugins.SpeechRecognition.requestPermissions();
+    }
+    if (capPlugins.SpeechRecognition.removeAllListeners) {
+      await capPlugins.SpeechRecognition.removeAllListeners();
+    }
+    if (capPlugins.SpeechRecognition.addListener) {
+      await capPlugins.SpeechRecognition.addListener('partialResults', (event) => {
+        const transcript = event.matches?.[0]?.trim?.() || '';
+        if (transcript) {
+          pluginLastTranscript = transcript;
+          recognizedText.textContent = transcript;
+        }
+      });
+    }
+    await capPlugins.SpeechRecognition.start({
+      language: 'ko-KR',
+      maxResults: 1,
+      prompt: '문장을 또박또박 읽어주세요',
+      partialResults: true,
+      popup: true,
+    });
+    pluginRecognitionActive = true;
+    statusText.textContent = '음성 인식 중...';
+    recordBtn.textContent = '녹음 종료 ⏹';
+    recordBtn.dataset.mode = 'recording';
+    startTimer(8);
+    return true;
+  } catch {
+    pluginRecognitionActive = false;
+    return false;
+  }
+}
+
+async function stopPluginRecognition() {
+  pluginRecognitionActive = false;
+  try {
+    if (capPlugins.SpeechRecognition.stop) await capPlugins.SpeechRecognition.stop();
+  } catch {
+    // no-op
+  }
+  if (pluginLastTranscript) {
+    statusText.textContent = '음성 인식 완료';
+    evaluateResult(pluginLastTranscript);
+  } else {
+    statusText.textContent = '음성이 인식되지 않았어요. 다시 시도해 주세요.';
+  }
 }
 
 function startTimer(seconds) {
